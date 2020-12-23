@@ -20,7 +20,7 @@ The project contains the following components
 
 ## Project structure
 
-![](_Docu/ProjectStructure.png)
+![](_Documentation/ProjectStructure.png)
 
 ## Developer instructions
 Detailed developer informations can be found [here](/_Docu/Entwicklerdokumentation.pdf)
