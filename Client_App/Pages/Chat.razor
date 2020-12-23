@@ -1,0 +1,24 @@
+﻿@page "/chat"
+
+<h3>Chat</h3>
+
+<EditForm Model="@messageToSend">
+    <InputTextArea @bind-Value="@messageToSend">
+
+    </InputTextArea>
+
+    <button @onclick="SendMessage">Senden</button>
+</EditForm>
+
+
+
+@code {
+
+    public string messageToSend { get; set; } = string.Empty;
+
+    public void SendMessage()
+    {
+        var x = messageToSend;
+    }
+
+}

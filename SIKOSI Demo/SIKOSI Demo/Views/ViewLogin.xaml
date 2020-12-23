@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<views:SikosiContentPage
+    x:Class="SIKOSI.Sample02.Views.ViewLogin"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:SIKOSI.Sample02.Views.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModel="clr-namespace:SIKOSI.Sample02.ViewModels"
+    xmlns:views="clr-namespace:SIKOSI.Sample02.Views"
+    d:DataContext="{d:DesignInstance {x:Type viewModel:ViewModelLogin}}"
+    x:TypeArguments="viewModel:ViewModelLogin"
+    mc:Ignorable="d">
+    <ContentPage.Content>
+        <StackLayout Margin="20">
+            <Label
+                FontSize="Title"
+                HorizontalTextAlignment="Center"
+                Text="Login"
+                TextColor="Black" />
+            <Entry
+                HorizontalTextAlignment="Center"
+                Placeholder="Username"
+                Text="{Binding AuthModel.Username}" />
+            <Entry
+                HorizontalTextAlignment="Center"
+                IsPassword="True"
+                Placeholder="Password"
+                Text="{Binding AuthModel.Password}" />
+            <Button
+                Command="{Binding LoginCommand}"
+                Text="Login"
+                VerticalOptions="EndAndExpand" />
+            <Button
+                Clicked="SendToRegistration"
+                Text="Create new account"
+                VerticalOptions="End" />
+        </StackLayout>
+    </ContentPage.Content>
+</views:SikosiContentPage>

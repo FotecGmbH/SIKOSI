@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SIKOSI.Sample01_Auth</name>
+    </assembly>
+    <members>
+        <member name="T:SIKOSI.Sample01_Auth.Controllers.AccountController">
+            <summary>
+                Account
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Controllers.AccountController.#ctor(SIKOSI.Services.Auth.Interfaces.IUserService,Microsoft.Extensions.Options.IOptions{SIKOSI.Sample01_Auth.Helpers.AppSettings},AutoMapper.IMapper)">
+            <summary>
+                Constructor
+            </summary>
+            <param name="userService">User Service</param>
+            <param name="appSettings">Application Settings</param>
+            <param name="mapper">Mapper</param>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Controllers.AccountController.Authenticate(SIKOSI.Exchange.Model.AuthenticateModel)">
+            <summary>
+                Authentication
+            </summary>
+            <param name="model">Credentials</param>
+            <returns>Authenticated User</returns>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Controllers.AccountController.Logout">
+            <summary>
+                Logout
+            </summary>
+            <returns>true if you succeeded</returns>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Controllers.AccountController.Manage">
+            <summary>
+                Manage
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Controllers.AccountController.Register(SIKOSI.Exchange.Model.RegisterModel)">
+            <summary>
+            Register a new user
+            </summary>
+            <param name="model">User</param>
+            <returns>status of success</returns>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Controllers.AccountController.GetIpAdress">
+            <summary>
+                Gets the IpAdress from the requesting Client
+            </summary>
+            <returns>IP Adress</returns>
+        </member>
+        <member name="T:SIKOSI.Sample01_Auth.Controllers.UsersController">
+            <summary>
+            User Controller for User Managmenet
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Controllers.UsersController.#ctor(SIKOSI.SampleDatabase01.Context.DataContext)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="context">DB Context</param>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Controllers.UsersController.GetUsers">
+            <summary>
+            Get Users
+            </summary>
+            <returns>User</returns>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Controllers.UsersController.GetTblUser(System.Int32)">
+            <summary>
+            Get a specific user
+            </summary>
+            <param name="id">ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Controllers.UsersController.PutTblUser(System.Int32,Sample0_Basic.Entities.TblUser)">
+            <summary>
+            Update a user
+            </summary>
+            <param name="id">ID</param>
+            <param name="tblUser">user</param>
+            <returns></returns>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Controllers.UsersController.PostTblUser(Sample0_Basic.Entities.TblUser)">
+            <summary>
+            Add a new user
+            </summary>
+            <param name="user"></param>
+            <returns>Success status</returns>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Controllers.UsersController.DeleteTblUser(System.Int32)">
+            <summary>
+            Deletes a user
+            </summary>
+            <param name="id">ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Controllers.UsersController.TblUserExists(System.Int32)">
+            <summary>
+            Check if a user exists
+            </summary>
+            <param name="id">ID</param>
+            <returns></returns>
+        </member>
+        <member name="T:SIKOSI.Sample01_Auth.Helpers.AppSettings">
+            <summary>
+                <para>Application Settings</para>
+                Klasse AppSettings. (C) 2020 FOTEC Forschungs- und Technologietransfer GmbH
+            </summary>
+        </member>
+        <member name="P:SIKOSI.Sample01_Auth.Helpers.AppSettings.Secret">
+            <summary>
+                Schlüssel
+            </summary>
+        </member>
+        <member name="P:SIKOSI.Sample01_Auth.Helpers.AppSettings.TokenExpirationTimeout">
+            <summary>
+                Gültigkeit des Tokens in Minuten
+            </summary>
+        </member>
+        <member name="T:SIKOSI.Sample01_Auth.Helpers.AutoMapperProfile">
+            <summary>
+                Profile for Automapper
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Helpers.AutoMapperProfile.#ctor">
+            <summary>
+                Standard Constructor
+                Create the mappings
+            </summary>
+        </member>
+        <member name="T:SIKOSI.Sample01_Auth.Program">
+            <summary>
+            Programm Start
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Program.Main(System.String[])">
+            <summary>
+            Main
+            </summary>
+            <param name="args">arguments</param>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Program.CreateHostBuilder(System.String[])">
+            <summary>
+            Create Host Builder
+            </summary>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SIKOSI.Sample01_Auth.Startup">
+            <summary>
+            Startup
+            </summary>
+        </member>
+        <member name="F:SIKOSI.Sample01_Auth.Startup.SwaggerVersion">
+            <summary>
+                Welche Swagger Version soll verwendet werden (v1, v2, v3)
+            </summary>
+        </member>
+        <member name="F:SIKOSI.Sample01_Auth.Startup._configuration">
+            <summary>
+            Config
+            </summary>
+        </member>
+        <member name="F:SIKOSI.Sample01_Auth.Startup._env">
+            <summary>
+            WebHostEnvironment
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Startup.#ctor(Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="env">Environment</param>
+            <param name="configuration">Configuration</param>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services">Services</param>
+        </member>
+        <member name="M:SIKOSI.Sample01_Auth.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            his method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app">App</param>
+            <param name="env">Environment</param>
+        </member>
+    </members>
+</doc>

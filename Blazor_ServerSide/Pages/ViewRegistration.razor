@@ -1,0 +1,76 @@
+﻿@page "/register"
+
+@using SIKOSI.Sample02.ViewModels
+
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+@inject ViewModelRegistration VmRegistration
+
+<h1>Registrierung</h1>
+<hr />
+<div class="justify-content-center rounded bg-light">
+    <form>
+        <div class="form-group">
+            <label for="textbox_username">Benutzername</label>
+            <input type="text" class="form-control" id="textbox_username" @bind-value="VmRegistration.RegistrationModel.Username" aria-describedby="emailHelp" placeholder="Geben Sie ihren Benutzernamen ein! ">
+        </div>
+        <div class="form-group">
+            <label for="textbox_firstname">Vorname</label>
+            <input type="text" class="form-control" id="textbox_firstname" @bind-value="VmRegistration.RegistrationModel.FirstName" placeholder="Geben Sie ihren Vornamen ein! ">
+        </div>
+        <div class="form-group">
+            <label for="textbox_lastname">Nachname</label>
+            <input type="text" class="form-control" id="textbox_lastname" @bind-value="VmRegistration.RegistrationModel.LastName" placeholder="Geben Sie ihren Nachnamen ein! ">
+        </div>
+        <div class="form-group">
+            <label for="textbox_password">Password</label>
+            <input type="password" class="form-control" id="textbox_password" placeholder="Passwort eingeben! " @bind-value="VmRegistration.RegistrationModel.Password">
+        </div>
+        <div class="form-group">
+            <label for="textbox_confirm_password">Password</label>
+            <input type="password" class="form-control" id="textbox_confirm_password" placeholder="Passwort bestätigen! " @bind-value="VmRegistration.RegistrationModel.ConfirmPassword">
+        </div>
+        <Button @onclick="SubmitNewUser" class="btn btn-primary">Account erstellen</Button>
+    </form>
+</div>
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        await VmRegistration.OnInitialized();
+
+        VmRegistration.RegistrationSuccessful -= VmRegistrationOnRegistrationSuccessful;
+        VmRegistration.RegistrationNotSuccessful -= VmRegistrationOnRegistrationNotSuccessful;
+
+        VmRegistration.RegistrationSuccessful += VmRegistrationOnRegistrationSuccessful;
+        VmRegistration.RegistrationNotSuccessful += VmRegistrationOnRegistrationNotSuccessful;
+    }
+
+    private void VmRegistrationOnRegistrationNotSuccessful(object? sender, EventArgs e)
+    {
+        JSRuntime.InvokeVoidAsync("alert", "Registration failed - Please try again!");
+    }
+
+    private void VmRegistrationOnRegistrationSuccessful(object? sender, EventArgs e)
+    {
+        JSRuntime.InvokeVoidAsync("alert", "Registration successful - Please login!");
+
+        NavigationManager.NavigateTo("login");
+    }
+
+    /// <summary>
+    /// Submit registration data to server.
+    /// </summary>
+    private async void SubmitNewUser()
+    {
+        try
+        {
+            VmRegistration.RegistrationCommand.Execute(null);
+        }
+        catch
+        {
+            JSRuntime.InvokeVoidAsync("alert", "Registration failed - Please try again!");
+        }
+    }
+}

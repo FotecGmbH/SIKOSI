@@ -1,0 +1,6 @@
+﻿####################################################################
+##### Bitte hier die Lizenzen von verwendeten NuGets eintragen #####
+####################################################################
+
+Xamarin.Plugin.FilePicker -> MIT Lizenz
+Newtonsoft.Json -> MIT Lizenzen

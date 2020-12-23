@@ -1,0 +1,72 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="EventArgs\**" />
+    <EmbeddedResource Remove="EventArgs\**" />
+    <None Remove="EventArgs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Plugin.Permissions" Version="6.0.1" />
+    <PackageReference Include="System.Net.Http.Json" Version="3.2.0" />
+    <PackageReference Include="Xamarin.Forms" Version="4.8.0.1364" />  
+    <PackageReference Include="Xamarin.Essentials" Version="1.5.3.2" />  
+    <PackageReference Include="Xamarin.Plugin.FilePicker" Version="2.1.41" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ExchangeSample0\SIKOSI.Exchange.csproj" />
+    <ProjectReference Include="..\..\SIKOSI.Crypto\SIKOSI.Crypto.csproj" />
+    <ProjectReference Include="..\..\SIKOSI.SecureServices\SIKOSI.SecureServices.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\ViewCrypt.xaml.cs">
+      <DependentUpon>ViewCrypt.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ViewRegistration.xaml.cs">
+      <DependentUpon>ViewRegistration.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Views\Controls\ChatInput.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="Views\ViewSikosi.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Views\Controls\ChatInput.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Controls\IncomingChatMessage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Controls\OutgoingChatMessage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\ViewChatOverview.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\ViewLogin.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\ViewRegistration.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ViewCell
+    x:Class="SIKOSI.Sample02.Views.Controls.OutgoingChatMessage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Frame
+        Margin="80,10,10,10"
+        Padding="10"
+        BackgroundColor="#d6ffe4"
+        HasShadow="True">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <StackLayout
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Orientation="Horizontal">
+                <Label FontSize="10" Text="{Binding Author.FirstName}" />
+                <Label FontSize="10" Text="{Binding Author.LastName}" />
+            </StackLayout>
+
+            <!--  attachments  -->
+            <ListView
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                HasUnevenRows="True"
+                IsVisible="{Binding Attachments, Converter={StaticResource ItemsToVisibilityConverter}}"
+                ItemsSource="{Binding Attachments}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Image Source="{Binding Content, Converter={StaticResource BytesToImageSourceConverter}}" />
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <Label
+                Grid.Row="2"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                FontSize="20"
+                Text="{Binding Message}" />
+            <Label
+                Grid.Row="3"
+                Grid.Column="0"
+                FontSize="10"
+                Text="{Binding SentAt}" />
+        </Grid>
+    </Frame>
+</ViewCell>

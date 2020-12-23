@@ -1,0 +1,4 @@
+dotnet new tool-manifest
+dotnet tool install dotnet-ef --ignore-failed-sources
+dotnet ef migrations add InitialCreate --context SqliteDataContext --output-dir Migrations/SqliteMigrations --project Sample0_Basic
+dotnet ef database update --project Sample0_Basic --context SqliteDataContext

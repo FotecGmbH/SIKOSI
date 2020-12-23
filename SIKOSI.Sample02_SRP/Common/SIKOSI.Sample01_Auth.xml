@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SIKOSI.Sample02_SRP</name>
+    </assembly>
+    <members>
+        <member name="T:SIKOSI.Sample02_SRP.Controllers.AccountController">
+            <summary>
+            Account
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.AccountController.#ctor(SIKOSI.Services.Auth.Interfaces.IUserService,Microsoft.Extensions.Options.IOptions{SIKOSI.Sample02_SRP.Helpers.AppSettings},AutoMapper.IMapper)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="userService">User Service</param>
+            <param name="appSettings">Application Settings</param>
+            <param name="mapper">Mapper</param>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.AccountController.Authenticate(Exchange.Model.AuthenticateModel)">
+            <summary>
+            Authentication
+            </summary>
+            <param name="model">Credentials</param>
+            <returns>Authenticated User</returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.AccountController.Logout">
+            <summary>
+            Logout
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.AccountController.Manage">
+            <summary>
+            Manage
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.AccountController.GetIpAdress">
+            <summary>
+            Gets the IpAdress from the requesting Client
+            </summary>
+            <returns>IP Adress</returns>
+        </member>
+        <member name="T:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController">
+            <summary>
+            This class represents the controller handling SRP requests.
+            </summary>
+        </member>
+        <member name="F:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.srpServer">
+            <summary>
+            Reference to the srp server object that handles calculation logic related to the SRP protocol server part.
+            </summary>
+        </member>
+        <member name="F:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.context">
+            <summary>
+            Reference to the database context.
+            </summary>
+        </member>
+        <member name="F:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.dataCache">
+            <summary>
+            Class for storing values that were calculated by the <see cref="F:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.srpServer"/> class.
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.#ctor(SIKOSI.SampleDatabase01.Context.DataContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController"/> class.
+            </summary>
+            <param name="context">The database context.</param>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.#cctor">
+            <summary>
+            Initializes static members of the <see cref="T:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController"/> class.
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.GetSaltAsync(System.String)">
+            <summary>
+            Action that gets invoked when the user requests the salt for a given user name.
+            </summary>
+            <param name="userName">The specified user name.</param>
+            <returns>The salt for this particular user if successful. Otherwise a bad request result.</returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.GenerateProofAsync(SRPShared.SrpProofModel)">
+            <summary>
+            This method posts the client generated proof to the server in order to validate that
+            both client and server have got the correct key.
+            </summary>
+            <param name="model">The SRP proof model.</param>
+            <returns>The server proof, however only if the client proof was able to be verified.</returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.CompleteRegistrationAsync(SRPShared.SrpRegistrationModel)">
+            <summary>
+            Completes registration for a given user, persisting a user record in the database.
+            </summary>
+            <param name="model">The model containing registration information.</param>
+            <returns>An okay result.</returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.PostClientGeneratedValue(SRPShared.SrpAuthenticationModel)">
+            <summary>
+            Posts the client login information containing username and generated client public value to the server.
+            On receiving the values, the server calculates its own pair of ephemeral values, and proceeds to return the public value back to the client.
+            </summary>
+            <param name="model">Login model containing client generated value A, as well as username.</param>
+            <returns>The public server value.</returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.GetAnswer(SRPShared.SrpMessageModel)">
+            <summary>
+            Posts an encrypted message from the client to the server.
+            This method is used for testing and makes the server accept input in the format xxx:xxxx
+            and sends back anything that comes after the colon.
+            </summary>
+            <param name="messageModel">The message model.</param>
+            <returns>The server response.</returns>
+        </member>
+        <member name="T:SIKOSI.Sample02_SRP.Helpers.AppSettings">
+            <summary>
+            <para>Application Settings</para>
+            Klasse AppSettings. (C) 2020 FOTEC Forschungs- und Technologietransfer GmbH
+            </summary>
+        </member>
+        <member name="P:SIKOSI.Sample02_SRP.Helpers.AppSettings.Secret">
+            <summary>
+            Schlüssel
+            </summary>
+        </member>
+        <member name="T:SIKOSI.Sample02_SRP.Helpers.AutoMapperProfile">
+            <summary>
+            Profile for Automapper
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.AutoMapperProfile.#ctor">
+            <summary>
+            Standard Constructor
+            Create the mappings
+            </summary>
+        </member>
+        <member name="T:SIKOSI.Sample02_SRP.Helpers.DataCache">
+            <summary>
+            Data-Cache
+            </summary>
+        </member>
+        <member name="F:SIKOSI.Sample02_SRP.Helpers.DataCache.clientSessionValues">
+            <summary>
+                Dictionary mapping values generated for a client session to that clients verifier.
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.DataCache.ExtractClientValueA(System.Numerics.BigInteger)">
+            <summary>
+                Retrieves the client generated value A as part of the login process.
+            </summary>
+            <param name="clientKey">The client verifier used as a key.</param>
+            <returns>The retrieved value.</returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.DataCache.StoreClientGeneratedValue(System.Numerics.BigInteger,System.Byte[])">
+            <summary>
+                Stores the public value A that was sent to the server by the client.
+            </summary>
+            <param name="clientKey">The dictionary key. This is the client verifier.</param>
+            <param name="clientValue">The generated value.</param>
+            <exception cref="T:System.ArgumentNullException">
+                Is thrown if either client key or client value are null.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.DataCache.CreateUserRecord(System.Numerics.BigInteger,System.String,System.Byte[])">
+            <summary>
+                Creates a user record locally on the server in memory.
+            </summary>
+            <param name="clientKey">The client key for the dictionary.</param>
+            <param name="username">The user name.</param>
+            <param name="clientGeneratedValueA">The value generated by the client.</param>
+            <returns>An empty task object.</returns>
+            <exception cref="T:System.ArgumentNullException">
+                Thrown if either of the parameters are null.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.DataCache.RetrieveServerPublicValue(System.Numerics.BigInteger)">
+            <summary>
+                Retrieves the generated public server value for a client.
+            </summary>
+            <param name="clientKey">The client verifier.</param>
+            <returns>The values for this clients session.</returns>
+            <exception cref="T:System.ArgumentNullException">
+                Is thrown if client key is null.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.DataCache.RetrieveServerPrivateValue(System.Numerics.BigInteger)">
+            <summary>
+                Retrieves the generated private server value for a given client..
+            </summary>
+            <param name="clientKey">The client verifier.</param>
+            <returns>The values for this clients session.</returns>
+            <exception cref="T:System.ArgumentNullException">
+                Is thrown if client key is null.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.DataCache.StoreServerValues(System.Numerics.BigInteger,System.Byte[],System.Byte[])">
+            <summary>
+                Stores the public and prviate server values.
+            </summary>
+            <param name="clientVerifier">The clients key.</param>
+            <param name="privateServerValue">Thep rivate server value.</param>
+            <param name="publicServerValue">The public server value.</param>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.DataCache.IsKeyValid(System.Numerics.BigInteger)">
+            <summary>
+                Checks whether the specified dictionary key is valid.
+            </summary>
+            <param name="clientKey">The client verifier used as a dictionary key.</param>
+            <returns>Whether the key is valid.</returns>
+        </member>
+        <member name="F:SIKOSI.Sample02_SRP.Startup.SwaggerVersion">
+            <summary>
+                Welche Swagger Version soll verwendet werden (v1, v2, v3)
+            </summary>
+        </member>
+    </members>
+</doc>

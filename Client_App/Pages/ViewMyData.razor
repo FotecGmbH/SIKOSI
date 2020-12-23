@@ -1,0 +1,82 @@
+﻿@*@page "/profile/{Id:int}"*@
+@page "/mydata"
+
+<h1>Meine Daten</h1>
+<hr />
+<h3>Daten ändern</h3>
+<form>
+    <!--TODO Binding der Properties-->
+    <div class="form-group">
+        <label for="textbox_username">Benutzername</label>
+        <input type="text" class="form-control" id="textbox_username">
+    </div>
+    <div class="form-group">
+        <label for="textbox_firstname">Vorname</label>
+        <input type="text" class="form-control" id="textbox_firstname">
+    </div>
+    <div class="form-group">
+        <label for="textbox_lastname">Nachname</label>
+        <input type="text" class="form-control" id="textbox_lastname">
+    </div>
+    <div>
+        <label for="choosing_MFA">Zwei-Faktor-Authetifizierung</label>
+        <input type="checkbox" disabled="disabled" @bind-value="@checkbox" id="choosing_MFA">
+        <button type="button" class="btn btn-success">MFA aktivieren</button>
+        <!--<button type="button" class="btn btn-error">MFA deaktivieren</button>-->
+    </div>
+    <!--TODO Design-->
+    <!--if(mfa == aktivated) => Button(Mfa deaktivieren)-->
+    <!--if(mfa == deaktivated) => Button(Mfa aktivieren)-->
+    <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+</form>
+<br />
+<hr />
+<br />
+<h3>Verbundene Services</h3>
+<div class="logo_container">
+    <img src="/assets/apple.png" class="logo" @onclick="(() => LinkToApple())" />
+    <img src="/assets/facebook.png" class="logo" @onclick="(() => LinkToFacebook())" />
+    <img src="/assets/microsoft.png" class="logo" @onclick="(() => LinkToMicrosoft())" />
+</div>
+<style>
+    .logo{
+        width : 50px;
+    }
+</style>
+
+@code {
+    private bool checkbox;
+
+    protected override async Task OnInitializedAsync()
+    {
+        checkbox = false;
+    }
+
+    private async Task LinkToApple()
+    {
+        //TODO Link To Service
+        //if(!alreadyLinked)
+        //{
+        //    OpenLinkToApple
+        //}
+    }
+
+    private async Task LinkToMicrosoft()
+    {
+        //TODO Link To Service
+        //if(!alreadyLinked)
+        //{
+        //    OpenLinkToMicrosoft
+        //}
+    }
+
+    private async Task LinkToFacebook()
+    {
+        //TODO Link To Service
+        //if(!alreadyLinked)
+        //{
+        //    OpenLinkToFacebook
+        //}
+    }
+
+}

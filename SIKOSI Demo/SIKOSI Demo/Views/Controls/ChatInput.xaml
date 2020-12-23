@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView
+    x:Class="SIKOSI.Sample02.Views.Controls.ChatInput"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:SIKOSI.Sample02.Views.Controls"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Grid Grid.Row="2">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <controls:ExtendedEditor
+            x:Name="TextEditor"
+            Grid.Row="0"
+            Grid.Column="0"
+            Margin="5,5,0,5"
+            HasRoundedCorner="True"
+            HorizontalOptions="FillAndExpand"
+            IsExpandable="True"
+            Placeholder="Type in your message"
+            PlaceholderColor="LightGray"
+            Text="{Binding TextToSend}"
+            VerticalOptions="FillAndExpand" />
+
+        <Frame
+            Grid.Row="0"
+            Grid.Column="1"
+            Margin="5"
+            Padding="5"
+            BackgroundColor="#c2fffd"
+            BorderColor="DarkGray">
+            <Label
+                Text="Senden"
+                TextColor="Black"
+                VerticalOptions="Center"
+                VerticalTextAlignment="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{Binding CmdSendMessage}"
+                        NumberOfTapsRequired="1"
+                        Tapped="Handle_Completed" />
+                </Label.GestureRecognizers>
+            </Label>
+        </Frame>
+
+        <Label
+            Grid.Row="1"
+            Grid.Column="0"
+            Text="{Binding AttachmentNames}" />
+
+        <Frame
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="5"
+            Padding="5"
+            BackgroundColor="AliceBlue"
+            BorderColor="DarkGray">
+            <Label
+                Text="Attachments"
+                TextColor="Black"
+                VerticalOptions="Center"
+                VerticalTextAlignment="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CmdChoseAttachments}" NumberOfTapsRequired="1" />
+                </Label.GestureRecognizers>
+            </Label>
+        </Frame>
+
+    </Grid>
+</ContentView>

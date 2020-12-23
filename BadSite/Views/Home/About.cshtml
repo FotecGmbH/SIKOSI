@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Information über Demo";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>Diese Demo-Applikation soll eine <a href="https://docs.microsoft.com/en-us/aspnet/core/security/anti-request-forgery?view=aspnetcore-3.1">XSRF-Attacke</a> demonstrieren, sowie erläutern
+    wie es möglich ist, sich vor dieser aus Benutzersicht zu schützen, und aus Entwicklersicht diese zu verhindern.</p> 
+
+<p>XSRF-Attacken sind eines der größten Sicherheitsrisiken für Web-Applikationen. Eine Applikation macht sich gegen XSRF überall dort verwundbar, wo bei einem Request 
+    nicht darauf geachtet wird, ob das Request tatsächlich von einem autorisierten Benutzer stammt, oder von einem Betrüger, welcher an das gültige Session Cookie des Benutzers
+    gelangt ist.
+    </p>
+<p>
+    Beim Einloggen in eine Applikation, wird ein Session Cookie generiert. Dieses Session Cookie wird, meist in Form einer Zeichenkette, im Browser hinterlegt
+    und bei jedem darauffolgenden Request mitgeschickt. Das Session Cookie erlaubt es einem Server, festzustellen mit wem gerade kommuniziert wird, es ist
+    sozusagen eine Art Ausweis für den Benutzer gegenüber dem Server.
+</p>
+<p>
+    Ein Problem entsteht dann, wenn ein Session Cookie von einem Angreifer gestohlen wird, da dieser Angreifer gegenüber dem Webserver in diesem Fall
+    behaupten kann, der Benutzer zu sein.
+</p>
+
+<p>
+    Bei einer XSRF-Attacke macht sich ein Angreifer die Tatsache zunutzen, dass ein Benutzer vergessen hat sich auszuloggen und dadurch das Session Cookie
+    von Seiten des Servers noch als gültig betrachtet wird.
+    Daher bietet das sich ausloggen nach dem Benutzen einer Applikation einen guten <b>Schutz gegen XSRF-Attacken.</b> Jedoch ist festzuhalten, dass
+    Benutzer zwar durch ihr verhalten die Chancen auf eine erfolgreiche XSRF-Attacke minimieren können, jedoch es <b>nicht in der alleinigen Verantwortung des Benutzers liegen darf</b>,
+    diese Art von Angriff zu unterbinden.
+
+    Die gängigste Methode aus Entwicklersicht, eine XSRF-Attacke zu verhindern, ist der <b>AntiForgeryToken</b>.
+
+    Mehr dazu, wie dieser Token in ASP.NET Core verwendet werden kann, ist <a href="https://docs.microsoft.com/en-us/aspnet/core/security/anti-request-forgery?view=aspnetcore-3.1">hier</a> nachzulesen.
+</p>

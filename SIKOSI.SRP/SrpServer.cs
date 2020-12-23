@@ -1,0 +1,227 @@
+﻿// (C) 2020 FOTEC Forschungs- und Technologietransfer GmbH
+// Das Forschungsunternehmen der Fachhochschule Wiener Neustadt
+// 
+// Kontakt biss@fotec.at / www.fotec.at
+// 
+// Erstversion vom 08.07.2020 11:29
+// Entwickler      Gregor Faiman
+// Projekt         SIKOSI
+namespace SRP_SDK
+{
+    using System;
+    using System.Numerics;
+    using System.Text;
+    using System.Threading.Tasks;
+    using SecurityDriven.Inferno;
+    using System.Linq;
+
+    /// <summary>
+    /// Offers functionality implemented by the server in the SRP protocol.
+    /// </summary>
+    public class SrpServer
+    {
+        /// <summary>
+        /// Backing field of the <see cref="SrpGroup"/> Property.
+        /// </summary>
+        private SRPGroup srpGroup;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Server"/> class.
+        /// </summary>
+        /// <param name="g">The used generator as defined by RFC5054.</param>
+        /// <param name="N">The used value N as defined by RFC5054.</param>
+        /// <exception cref="ArgumentNullException">
+        /// Is thrown if SRP group is null.
+        /// </exception>
+        public SrpServer(SRPGroup srpGroup)
+        {
+            this.SrpGroup = srpGroup;
+        }
+
+        /// <summary>
+        /// Gets the used SRP group as defined in: https://tools.ietf.org/html/rfc5054#appendix-A
+        /// </summary>
+        /// <value>The used SRP group.</value>
+        /// <exception cref="ArgumentNullException">
+        /// Is thrown if you attempt to set null.
+        /// </exception>
+        public SRPGroup SrpGroup
+        {
+            get
+            {
+                return this.srpGroup;
+            }
+
+            private set
+            {
+                this.srpGroup = value ?? throw new ArgumentNullException(nameof(value), "Srp group must not be null");
+            }
+        }
+
+        /// <summary>
+        /// Generates a salt based on the specified user name.
+        /// </summary>
+        /// <param name="userName">The specified user name.</param>
+        /// <returns>The generated salt.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Is thrown if the user name is null.
+        /// </exception>
+        public byte[] GenerateSalt(string userName)
+        {
+            if (userName == null)
+            {
+                throw new ArgumentNullException(nameof(userName), "User name must not be null");
+            }
+
+            byte[] salt;
+            var userBytes = Encoding.UTF8.GetBytes(userName);
+
+            using (var hmac = SuiteB.HmacFactory())
+            {
+                salt = hmac.ComputeHash(userBytes);
+            }
+
+            return salt;
+        }
+
+        /// <summary>
+        /// Calculates the server proof.
+        /// This proof can be sent to the client in order to verify that the server calculated
+        /// the same session key as the client did.
+        /// </summary>
+        /// <param name="sessionKey">The session key as calculated by the server.</param>
+        /// <param name="clientProof">The proof that was calculated by the client.</param>
+        /// <param name="clientPublicValue">The client public value A that was calculated during Login.</param>
+        /// <exception cref="ArgumentNullException">
+        /// Is thrown if either of the arguments are null.
+        /// </exception>
+        /// <returns>The server proof.</returns>
+        public byte[] CalculateServerProof(byte[] sessionKey, byte[] clientProof, byte[] clientPublicValue)
+        {
+            if (sessionKey == null)
+                throw new ArgumentNullException(nameof(sessionKey), "Session key must not be null.");
+
+            if (clientProof == null)
+                throw new ArgumentNullException(nameof(clientProof), "Client proof must not be null.");
+
+            if (clientPublicValue == null)
+                throw new ArgumentNullException(nameof(clientPublicValue), "Client public value must not be null.");
+
+            byte[] serverProof;
+            int padLength = this.SrpGroup.N.ToByteArray().Length;
+
+            using (var hmac = SuiteB.HmacFactory())
+            {
+                serverProof = hmac.ComputeHash((ExtensionsAndHelpers.PadBytes(clientPublicValue, padLength))
+                       .Concat(ExtensionsAndHelpers.PadBytes(clientProof, padLength))
+                       .Concat(ExtensionsAndHelpers.PadBytes(sessionKey, padLength))
+                       .ToArray());
+            }
+
+            return serverProof;
+        }
+
+        /// <summary>
+        /// This method calculates the expected client proof. This can be used to verify the proof sent to the server by the client.
+        /// If the client proof matches the output of this method, both the client and the server have calculated the same session key.
+        /// </summary>
+        /// <param name="sessionKey">The session key as calculated by the server.</param>
+        /// <param name="clientPublicValue">The public value generated by the client during Login.</param>
+        /// <param name="serverPublicValue">The public value generated by the server during Login.</param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if either of the arguments are null..
+        /// </exception>
+        public BigInteger CalculateExpectedClientProof(byte[] sessionKey, byte[] clientPublicValue, byte[] serverPublicValue)
+        {
+            if (sessionKey == null)
+                throw new ArgumentNullException(nameof(sessionKey), "Session key must not be null.");
+
+            if (clientPublicValue == null)
+                throw new ArgumentNullException(nameof(clientPublicValue), "Client public value must not be null.");
+
+            if (serverPublicValue == null)
+                throw new ArgumentNullException(nameof(serverPublicValue), "Server public value must not be null.");
+
+            BigInteger expectedClientProof;
+            int padLength = this.SrpGroup.N.ToByteArray().Length;
+
+            using (var hmac = SuiteB.HmacFactory())
+            {
+                expectedClientProof = hmac.ComputeHash((ExtensionsAndHelpers.PadBytes(clientPublicValue, padLength))
+                   .Concat(ExtensionsAndHelpers.PadBytes(serverPublicValue, padLength))
+                   .Concat(ExtensionsAndHelpers.PadBytes(sessionKey, padLength))
+                   .ToArray())
+                    .ToBigInteger();
+            }
+
+            return expectedClientProof;
+        }
+
+        /// <summary>
+        /// Generates the public and private values for the server.
+        /// Private value b is kept secret.
+        /// Public value B is sent to the client.
+        /// </summary>
+        /// <returns>The generated value B.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Is thrown if verifier is null.
+        /// </exception>
+        public BigInteger GenerateBValues(BigInteger verifier, out BigInteger serverPrivateValue)
+        {
+            if (verifier == null)
+                throw new ArgumentNullException(nameof(verifier), "Verifier must not be null.");
+
+            BigInteger k;
+            BigInteger left;
+            BigInteger right;
+            BigInteger serverPublicValue;
+
+            serverPrivateValue = ExtensionsAndHelpers.GenerateEphemeralPrivateValue(this.SrpGroup);
+
+            using (var hmac = SuiteB.HmacFactory())
+            {
+                k = ExtensionsAndHelpers.ComputeK(this.SrpGroup, hmac);
+            }
+
+            left = (k * verifier) % this.SrpGroup.N;
+            right = BigInteger.ModPow(this.SrpGroup.Generator, serverPrivateValue, this.SrpGroup.N);
+            serverPublicValue = (left + right) % this.SrpGroup.N;
+
+            return serverPublicValue;
+        }
+
+        /// <summary>
+        /// Computes the session key.
+        /// </summary>
+        /// <returns>A task object containing a big integer in its result when completed.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// Is thrown if either of the arguments are null.
+        /// </exception>
+        public BigInteger ComputeSessionKey(BigInteger verifier, BigInteger publicClientValue, BigInteger privateServerValue, BigInteger publicServerValue)
+        {
+            if (verifier == null)
+                throw new ArgumentNullException(nameof(verifier), "Verifier must not be null");
+
+            if (publicClientValue == null)
+                throw new ArgumentNullException(nameof(publicClientValue), "Client value A must not be null");
+
+            if (privateServerValue == null)
+                throw new ArgumentNullException(nameof(privateServerValue), "Private server value must not be null.");
+
+            if (publicServerValue == null)
+                throw new ArgumentNullException(nameof(publicServerValue), "Public server value must not be null.");
+
+            BigInteger randomScramblingValue;
+            BigInteger left;
+
+            using (var hmac = SuiteB.HmacFactory())
+            {
+                randomScramblingValue = ExtensionsAndHelpers.ComputeU(hmac, publicClientValue, publicServerValue);
+            }
+
+            left = publicClientValue * BigInteger.ModPow(verifier, randomScramblingValue, this.SrpGroup.N) % this.SrpGroup.N;
+
+            return BigInteger.ModPow(left, privateServerValue, this.SrpGroup.N);
+        }
+    }
+}

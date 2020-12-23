@@ -1,0 +1,477 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SIKOSI.Sample02_SRP</name>
+    </assembly>
+    <members>
+        <member name="T:SIKOSI.Sample02_SRP.Controllers.AccountController">
+            <summary>
+            Account
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.AccountController.#ctor(SIKOSI.Services.Auth.Interfaces.IUserService,Microsoft.Extensions.Options.IOptions{SIKOSI.Sample02_SRP.Helpers.AppSettings},AutoMapper.IMapper)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="userService">User Service</param>
+            <param name="appSettings">Application Settings</param>
+            <param name="mapper">Mapper</param>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.AccountController.Authenticate(SIKOSI.Exchange.Model.AuthenticateModel)">
+            <summary>
+            Authentication
+            </summary>
+            <param name="model">Credentials</param>
+            <returns>Authenticated User</returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.AccountController.Logout">
+            <summary>
+            Logout
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.AccountController.Manage">
+            <summary>
+            Manage
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.AccountController.GetIpAdress">
+            <summary>
+            Gets the IpAdress from the requesting Client
+            </summary>
+            <returns>IP Adress</returns>
+        </member>
+        <member name="T:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController">
+            <summary>
+            This class represents the controller handling SRP requests.
+            </summary>
+        </member>
+        <member name="F:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.service">
+            <summary>
+            Service for SRP related actions.
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.#ctor(SIKOSI.Sample02_SRP.Services.ISRPProtocolService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController"/> class.
+            </summary>
+            <param name="service">The SRP protocol service.</param>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.GetSaltAsync(System.String)">
+            <summary>
+            Action that gets invoked when the user requests the salt for a given user name.
+            </summary>
+            <param name="userName">The specified user name.</param>
+            <returns>The salt for this particular user if successful. Otherwise a bad request result.</returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.GenerateProofAsync(SIKOSI.SRPShared.SrpProofModel)">
+            <summary>
+            This method posts the client generated proof to the server in order to validate that
+            both client and server have got the correct key.
+            </summary>
+            <param name="model">The SRP proof model.</param>
+            <returns>The server proof, however only if the client proof was able to be verified.</returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.CompleteRegistrationAsync(SIKOSI.SRPShared.SrpRegistrationModel)">
+            <summary>
+            Completes registration for a given user, persisting a user record in the database.
+            </summary>
+            <param name="model">The model containing registration information.</param>
+            <returns>An okay result.</returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.PostClientGeneratedValue(SIKOSI.SRPShared.SrpAuthenticationModel)">
+            <summary>
+            Posts the client login information containing username and generated client public value to the server.
+            On receiving the values, the server calculates its own pair of ephemeral values, and proceeds to return the public value back to the client.
+            </summary>
+            <param name="model">Login model containing client generated value A, as well as username.</param>
+            <returns>The public server value.</returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Controllers.SrpProtocolController.GetAnswer(SIKOSI.SRPShared.SrpMessageModel)">
+            <summary>
+            Posts an encrypted message from the client to the server.
+            This method is used for testing and makes the server accept input in the format xxx:xxxx
+            and sends back anything that comes after the colon.
+            </summary>
+            <param name="messageModel">The message model.</param>
+            <returns>The server response.</returns>
+        </member>
+        <member name="T:SIKOSI.Sample02_SRP.Helpers.AppSettings">
+            <summary>
+            <para>Application Settings</para>
+            Klasse AppSettings. (C) 2020 FOTEC Forschungs- und Technologietransfer GmbH
+            </summary>
+        </member>
+        <member name="P:SIKOSI.Sample02_SRP.Helpers.AppSettings.Secret">
+            <summary>
+            Schlüssel
+            </summary>
+        </member>
+        <member name="T:SIKOSI.Sample02_SRP.Helpers.AutoMapperProfile">
+            <summary>
+            Profile for Automapper
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.AutoMapperProfile.#ctor">
+            <summary>
+            Standard Constructor
+            Create the mappings
+            </summary>
+        </member>
+        <member name="T:SIKOSI.Sample02_SRP.Helpers.DataCache">
+            <summary>
+            Data-Cache
+            </summary>
+        </member>
+        <member name="F:SIKOSI.Sample02_SRP.Helpers.DataCache.clientSessionValues">
+            <summary>
+                Dictionary mapping values generated for a client session to that clients verifier.
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.DataCache.ExtractClientValueA(System.Numerics.BigInteger)">
+            <summary>
+                Retrieves the client generated value A as part of the login process.
+            </summary>
+            <param name="clientKey">The client verifier used as a key.</param>
+            <returns>The retrieved value.</returns>
+            <exception cref="T:System.ArgumentException">
+            Thrown if the specified key is invalid.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.DataCache.StoreClientGeneratedValue(System.Numerics.BigInteger,System.Byte[])">
+            <summary>
+                Stores the public value A that was sent to the server by the client.
+            </summary>
+            <param name="clientKey">The dictionary key. This is the client verifier.</param>
+            <param name="clientValue">The generated value.</param>
+            <exception cref="T:System.ArgumentNullException">
+                Is thrown if either client key or client value are null.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.DataCache.CreateUserRecord(System.Numerics.BigInteger,System.String,System.Byte[])">
+            <summary>
+                Creates a user record locally on the server in memory.
+            </summary>
+            <param name="clientKey">The client key for the dictionary.</param>
+            <param name="username">The user name.</param>
+            <param name="clientGeneratedValueA">The value generated by the client.</param>
+            <returns>An empty task object.</returns>
+            <exception cref="T:System.ArgumentNullException">
+                Thrown if either of the parameters are null.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.DataCache.RetrieveServerPublicValue(System.Numerics.BigInteger)">
+            <summary>
+                Retrieves the generated public server value for a client.
+            </summary>
+            <param name="clientKey">The client verifier.</param>
+            <returns>The values for this clients session.</returns>
+            <exception cref="T:System.ArgumentException">
+                Is thrown if client key is invalid.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.DataCache.RetrieveServerPrivateValue(System.Numerics.BigInteger)">
+            <summary>
+                Retrieves the generated private server value for a given client..
+            </summary>
+            <param name="clientKey">The client verifier.</param>
+            <returns>The values for this clients session.</returns>
+            <exception cref="T:System.ArgumentException">
+                Is thrown if client key is invalid.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.DataCache.StoreServerValues(System.Numerics.BigInteger,System.Byte[],System.Byte[])">
+            <summary>
+                Stores the public and prviate server values.
+            </summary>
+            <param name="clientVerifier">The clients key.</param>
+            <param name="privateServerValue">Thep rivate server value.</param>
+            <param name="publicServerValue">The public server value.</param>
+            <exception cref="T:System.ArgumentException">
+            Is thrown if the client verifier is an invalid key.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.DataCache.StoreSessionKey(System.Numerics.BigInteger,System.Byte[])">
+            <summary>
+            Stores the session key in memory.
+            </summary>
+            <param name="clientVerifier">The client verifier used as a dictionary key.</param>
+            <param name="sessionKey">The session key to be stored.</param>
+            <exception cref="T:System.ArgumentException">
+            Is thrown if the client key is invalid.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.DataCache.ExtractSessionKey(System.Numerics.BigInteger)">
+            <summary>
+            Extracts the stored session key.
+            </summary>
+            <param name="clientVerifier">The client key used for storing the session key in the dictionary.</param>
+            <returns>The session key.</returns>
+            <exception cref="T:System.ArgumentException">
+            Thrown if the specified dictionary key is invalid.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Helpers.DataCache.IsKeyValid(System.Numerics.BigInteger)">
+            <summary>
+                Checks whether the specified dictionary key is valid.
+            </summary>
+            <param name="clientKey">The client verifier used as a dictionary key.</param>
+            <returns>Whether the key is valid.</returns>
+        </member>
+        <member name="T:SIKOSI.Sample02_SRP.Services.ISRPProtocolService">
+            <summary>
+            Service definition for SRP services.
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.ISRPProtocolService.GetSalt(System.String)">
+            <summary>
+            Gets the salt value for a given username.
+            </summary>
+            <param name="username">The specified username to get the salt for.</param>
+            <returns>The salt associated with the username.</returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.ISRPProtocolService.GenerateSessionKey(System.Numerics.BigInteger)">
+            <summary>
+            Generates a session key.
+            </summary>
+            <param name="verifier">The verifier to use in key generation.</param>
+            <returns>The generated session key.</returns>
+            <exception cref="T:System.ArgumentException">
+            Is thrown if the needed values for session key generation have not yet been generated and stored with the specified verifier.
+            Needed values for session key generation are: Client public value, Server private value, server public value.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.ISRPProtocolService.GetSpecificUser(System.String)">
+            <summary>
+            Gets a specific user from the database.
+            </summary>
+            <param name="username">The username of the user to get.</param>
+            <returns>The user object.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if username is null.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            Thrown if the user does not exist.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.ISRPProtocolService.ValidateClientProof(System.Numerics.BigInteger,System.Byte[],System.Byte[])">
+            <summary>
+            Validates the client client proof, ensuring that the clients session key matches the servers session key.
+            </summary>
+            <param name="verifier">The clients verifier. Generated during registration and stored by the server.</param>
+            <param name="sessionKey">The session key as generated by the server.</param>
+            <param name="clientProof">The client proof as generated and sent over by the client.</param>
+            <returns>Whether the client proof calculated by the server matches the client proof calculated by the client.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if verifier, session key or client proof are null.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.ISRPProtocolService.CalculateServerProof(System.Numerics.BigInteger,System.Byte[],System.Byte[])">
+            <summary>
+            Calculates the server proof.
+            </summary>
+            <param name="verifier">Client verifier.</param>
+            <param name="sessionKey">The session key as calculated by the server.</param>
+            <param name="clientProof">The proof as calculated by the client and sent to the server.</param>
+            <returns>The server proof.</returns>
+            <exception cref="T:System.ArgumentException">
+            Might be thrown in the <see cref="!:DataCache.ExtractClientValueA(BigInteger)"/> method.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if session key or client proof are null.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.ISRPProtocolService.CreateUserRecordInMemory(System.Numerics.BigInteger,System.String,System.Byte[])">
+            <summary>
+            Creates a user record in memory for authentication.
+            </summary>
+            <param name="verifier">The user verifier.</param>
+            <param name="username">The user name.</param>
+            <param name="clientValue">Ephemeral client value generated as part of the authentication process.</param>
+            <exception cref="T:System.ArgumentNullException">
+            Is thrown if user name or client value are nnull.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.ISRPProtocolService.GenerateServerProtocolValues(System.Numerics.BigInteger)">
+            <summary>
+            Generates two ephemeral server values.
+            </summary>
+            <param name="verifier">The clients verifier.</param>
+            <returns>The generated public server value.</returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.ISRPProtocolService.Exists(System.String)">
+            <summary>
+            Checks whether a specific user exists.
+            </summary>
+            <param name="username">The user name to check for.</param>
+            <returns>Whether a user with the specified user name exists.</returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.ISRPProtocolService.CompleteRegistration(System.String,System.Byte[],System.Byte[])">
+            <summary>
+            Completes the registration and persists user object in database.
+            </summary>
+            <param name="username">The users username.</param>
+            <param name="verifierBytes">The users generated verifier.</param>
+            <param name="saltBytes">The users salt.</param>
+            <returns>An empty task.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Is thrown if username, verifier or salt bytes are null.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.ISRPProtocolService.GetMessageReply(System.String,System.Byte[])">
+            <summary>
+            Gets a message reply.
+            </summary>
+            <param name="username">The users username.</param>
+            <param name="encryptedMessage">The users encrypted message.</param>
+            <returns>A reply to the message.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Is thrown if username or encrypted message are null.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            Is thrown if a user with the specifie user name does not exist.
+            </exception>
+            <exception cref="T:System.FormatException">
+            Is thrown if the decrypted message does not contain a colon.
+            </exception>
+        </member>
+        <member name="T:SIKOSI.Sample02_SRP.Services.SRPProtocolService">
+            <summary>
+            This is a service used by the SRP protocol controller.
+            </summary>
+        </member>
+        <member name="F:SIKOSI.Sample02_SRP.Services.SRPProtocolService.dataCache">
+            <summary>
+            Class for storing values that were calculated by the <see cref="F:SIKOSI.Sample02_SRP.Services.SRPProtocolService.srpServer"/> class.
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.SRPProtocolService.#ctor(SIKOSI.SampleDatabase03.Context.SRPDataContext,SIKOSI.Sample02_SRP.Helpers.DataCache)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SIKOSI.Sample02_SRP.Services.SRPProtocolService"/> class.
+            </summary>
+            <param name="context">The database context.</param>
+            <param name="dataCache">The in memory data cache.</param>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.SRPProtocolService.CalculateServerProof(System.Numerics.BigInteger,System.Byte[],System.Byte[])">
+            <summary>
+            Calculates the server proof.
+            </summary>
+            <param name="verifier">Client verifier.</param>
+            <param name="sessionKey">The session key as calculated by the server.</param>
+            <param name="clientProof">The proof as calculated by the client and sent to the server.</param>
+            <returns>The server proof.</returns>
+            <exception cref="T:System.ArgumentException">
+            Might be thrown in the <see cref="M:SIKOSI.Sample02_SRP.Helpers.DataCache.ExtractClientValueA(System.Numerics.BigInteger)"/> method.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if session key or client proof are null.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.SRPProtocolService.CompleteRegistration(System.String,System.Byte[],System.Byte[])">
+            <summary>
+            Completes the registration and persists user object in database.
+            </summary>
+            <param name="username">The users username.</param>
+            <param name="verifierBytes">The users generated verifier.</param>
+            <param name="saltBytes">The users salt.</param>
+            <returns>An empty task.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Is thrown if username, verifier or salt bytes are null.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.SRPProtocolService.CreateUserRecordInMemory(System.Numerics.BigInteger,System.String,System.Byte[])">
+            <summary>
+            Creates a user record in memory for authentication.
+            </summary>
+            <param name="verifier">The user verifier.</param>
+            <param name="username">The user name.</param>
+            <param name="clientValue">Ephemeral client value generated as part of the authentication process.</param>
+            <exception cref="T:System.ArgumentNullException">
+            Is thrown if user name or client value are nnull.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.SRPProtocolService.Exists(System.String)">
+            <summary>
+            Checks whether a specific user exists.
+            </summary>
+            <param name="username">The user name to check for.</param>
+            <returns>Whether a user with the specified user name exists.</returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.SRPProtocolService.GenerateServerProtocolValues(System.Numerics.BigInteger)">
+            <summary>
+            Generates two ephemeral server values.
+            </summary>
+            <param name="verifier">The clients verifier.</param>
+            <returns>The generated public server value.</returns>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.SRPProtocolService.GenerateSessionKey(System.Numerics.BigInteger)">
+            <summary>
+            Generates a session key.
+            </summary>
+            <param name="verifier">The verifier to use in key generation.</param>
+            <returns>The generated session key.</returns>
+            <exception cref="T:System.ArgumentException">
+            Is thrown if the needed values for session key generation have not yet been generated and stored with the specified verifier.
+            Needed values for session key generation are: Client public value, Server private value, server public value.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.SRPProtocolService.GetMessageReply(System.String,System.Byte[])">
+            <summary>
+            Gets a message reply.
+            </summary>
+            <param name="username">The users username.</param>
+            <param name="encryptedMessage">The users encrypted message.</param>
+            <returns>A reply to the message.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Is thrown if username or encrypted message are null.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            Is thrown if a user with the specifie user name does not exist.
+            </exception>
+            <exception cref="T:System.FormatException">
+            Is thrown if the decrypted message does not contain a colon.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.SRPProtocolService.GetSalt(System.String)">
+            <summary>
+            Gets the salt for a specific username.
+            </summary>
+            <param name="username">The username to get a salt for.</param>
+            <returns>The salt associated with this username.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Is thrown if username is null.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.SRPProtocolService.GetSpecificUser(System.String)">
+            <summary>
+            Gets a specific user from the database.
+            </summary>
+            <param name="username">The username of the user to get.</param>
+            <returns>The user object.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if username is null.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            Thrown if the user does not exist.
+            </exception>
+        </member>
+        <member name="M:SIKOSI.Sample02_SRP.Services.SRPProtocolService.ValidateClientProof(System.Numerics.BigInteger,System.Byte[],System.Byte[])">
+            <summary>
+            Validates the client client proof, ensuring that the clients session key matches the servers session key.
+            </summary>
+            <param name="verifier">The clients verifier. Generated during registration and stored by the server.</param>
+            <param name="sessionKey">The session key as generated by the server.</param>
+            <param name="clientProof">The client proof as generated and sent over by the client.</param>
+            <returns>Whether the client proof calculated by the server matches the client proof calculated by the client.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if verifier, session key or client proof are null.
+            </exception>
+        </member>
+        <member name="F:SIKOSI.Sample02_SRP.Startup.SwaggerVersion">
+            <summary>
+                Welche Swagger Version soll verwendet werden (v1, v2, v3)
+            </summary>
+        </member>
+    </members>
+</doc>

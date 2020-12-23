@@ -1,0 +1,320 @@
+﻿@page "/chat"
+
+@using SIKOSI.Crypto.Interfaces;
+@using System.IO;
+@using SIKOSI.Sample02.ViewModels
+
+@inject HttpClient http
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject ISecureEncryption encryption
+@inject ISecureSymmetricEncryption symmetricEncryption
+@inject AuthUserModel currentUser
+
+@inject ViewModelChatOverview VmChatOverview
+
+<div class="container-fluid" style="height : 85vh">
+    <div class="row w-100 h-100">
+        <div class="col-2 h-100 currentUsers ">
+            <hr />
+            <h5 class="text-center">Personal chats</h5>
+            <hr />
+            <!--User Container / Side Panel-->
+            <div class="container-fluid ">
+
+                @{
+                    var groupChatClass = "row text-center clickable";
+
+                    if (selectedUser is null)
+                    {
+                        groupChatClass += " bg-primary";
+                    }
+
+                    <div class="@groupChatClass" @onclick="(() => OnChangeToGroupChat())">
+                        <div class="font-weight-bold m-1"><label class="oi oi-people oi-align-left"></label>Groupchat</div>
+                    </div>
+                }
+
+                @if (VmChatOverview.AvailableUsers != null)
+                {
+                    var usersWithoutLocalUser = VmChatOverview.AvailableUsers.Where(x => x.Id != VmChatOverview.CurrentLocalUser.Id).ToList();
+
+                    for (int i = 0; i < usersWithoutLocalUser.Count; i++)
+                    {
+                        var user = usersWithoutLocalUser[i];
+
+                        var outerDivClass = "row userelements clickable";
+                        var innerDivClass = "font-weight-bold m-1";
+                        var labelClass = "oi oi-person oi-align-left";
+
+                        if (selectedUser == user)
+                        {
+                            outerDivClass += " bg-primary";
+                            innerDivClass += " text-white";
+                            labelClass += " text-white";
+                        }
+                        else
+                        {
+                            if (i % 2 == 0)
+                            {
+                                outerDivClass += " bg-light";
+                            }
+                            else
+                            {
+                                outerDivClass += " bg-secondary";
+                            }
+                        }
+
+                        <div class="@outerDivClass" @onclick="(() => OnChangeToUserMessage(user))">
+                            <div class="@innerDivClass"><label class="@labelClass"></label> @user.FirstName @user.LastName</div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        <div class="col-10 h-100">
+            <!--Message Container-->
+            <div class="container-fluid h-100">
+                <div class="d-flex">
+                    <div class="mr-auto p-2">
+                        <h3>@headerText</h3>
+                    </div>
+                    <div class="p-2">
+                        <span class="oi oi-person">  @VmChatOverview.CurrentLocalUser.FirstName @VmChatOverview.CurrentLocalUser.LastName (@VmChatOverview.CurrentLocalUser.Username)</span>
+                    </div>
+                </div>
+                <hr />
+                <div class="messagecontainer">
+                    @{
+                        List<ExChatMessage> viewedMessages = selectedUser != null ? selectedUser.ExchangedMessages : VmChatOverview.GroupMessages.ToList();
+
+                        foreach (var message in viewedMessages)
+                        {
+                            if (message.Author.Id == VmChatOverview.CurrentLocalUser.Id)
+                            {
+                                // own messages
+                                <div class="col m-1">
+                                    <div class="sent">
+                                        <div class="d-flex">
+                                            <div class="mr-auto p-2">
+                                                <div class="text-left font-weight-lighter chat-datetime">@message.SentAt.ToString("dd.MM.yyyy, HH:mm")</div>
+                                            </div>
+                                            <div class="p-2">
+                                                <div class="user font-weight-bold text-right ">@message.Author.Username</div>
+                                            </div>
+                                        </div>
+                                        <!-- show attachments -->
+                                        @if (message.Attachments != null && message.Attachments.Any())
+                                        {
+                                            foreach (var attachment in message.Attachments)
+                                            {
+                                                // if attachment is an image
+                                                if (attachment.Type != null && attachment.Type.StartsWith("image/"))
+                                                {
+                                                    <div class="img-thumbnail">
+                                                        <img src="data:image;base64,@System.Convert.ToBase64String(attachment.Content)" style="max-width: 100%" />
+                                                    </div>
+                                                }
+
+                                                // if attachment is a video
+                                                if (attachment.Type != null && attachment.Type.StartsWith("video/"))
+                                                {
+                                                    <div class="img-thumbnail">
+                                                        <video style="max-width: 100%" controls>
+                                                            <source type="@attachment.Type" src="data:@attachment.Type;base64,@System.Convert.ToBase64String(attachment.Content)"/> 
+                                                        </video>
+                                                    </div>
+                                                }
+                                            }
+                                        }
+                                        <!-- show chat message -->
+                                        <div class="msg text-right">@message.Message</div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                // messages from chat partner
+                                <div class="col m-1">
+                                    <div class="received">
+                                        <div class="d-flex">
+                                            <div class="p-2">
+                                                <div class="text-right font-weight-lighter chat-datetime">@message.SentAt.ToString("dd.MM.yyyy, HH:mm")</div>
+                                            </div>
+                                            <div class="mr-auto p-2">
+                                                <div class="user font-weight-bold text-right ">@message.Author.Username</div>
+                                            </div>
+                                        </div>
+                                        <!-- show attachments -->
+                                        @if (message.Attachments != null && message.Attachments.Any())
+                                        {
+                                            foreach (var attachment in message.Attachments)
+                                            {
+                                                // if attachment is an image
+                                                if (attachment.Type != null && attachment.Type.StartsWith("image/"))
+                                                {
+                                                    <div class="img-thumbnail">
+                                                        <img src="data:image;base64,@System.Convert.ToBase64String(attachment.Content)" style="max-width: 100%" />
+                                                    </div>
+                                                }
+
+                                                // if attachment is a video
+                                                if (attachment.Type != null && attachment.Type.StartsWith("video/"))
+                                                {
+                                                    <div class="img-thumbnail">
+                                                        <video style="max-width: 100%" controls>
+                                                            <source type="@attachment.Type" src="data:@attachment.Type;base64,@System.Convert.ToBase64String(attachment.Content)" />
+                                                        </video>
+                                                    </div>
+                                                }
+                                            }
+                                        }
+                                        <!-- show chat message -->
+                                        <div class="msg text-left">@message.Message</div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+                <hr />
+                <!--Input Container-->
+                <div class="messageInput">
+                    <div class="input-group mb-3">
+                        <TextEdit class="form-control" placeholder="Message" @bind-Text="messageToSend"/>
+                        <div class="input-group-append">
+                            <!-- Button Send Message -->
+                            <button class="btn btn-primary" style="align-self:center" @onclick="@(() => SendMessage(messageToSend, selectedUser))" disabled="@string.IsNullOrWhiteSpace(messageToSend)">
+                                Senden 
+                            </button>
+                            <FileEdit @ref="@fileEdit" Multiple="true" Filter="image/*, video/*" Changed="@OnFilesChanged"></FileEdit>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    /// <summary>
+    /// The message to send - user input.
+    /// </summary>
+    private string messageToSend;
+
+    private User selectedUser;
+
+    private string headerText;
+
+    private List<IFileEntry> attachments = new List<IFileEntry>();
+
+    FileEdit fileEdit;
+
+    protected override async Task OnInitializedAsync()
+    {
+        OnChangeToGroupChat();
+
+        try
+        {
+            VmChatOverview.PropertyChanged += (sender, arg) =>
+            {
+                StateHasChanged();
+            };
+
+            VmChatOverview.CurrentLocalUser = currentUser;
+
+            await VmChatOverview.OnInitialized();
+        }
+        catch
+        {
+            await SendToLogin();
+        }
+    }
+
+    private async Task SendToLogin()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Please login!");
+        }
+        finally
+        {
+            NavigationManager.NavigateTo("login");
+        }
+    }
+
+    /// <summary>
+    /// Sends a message encrypted for the specified user. If no user provided (i.e. is null) message will be encrypted with the group key.
+    /// </summary>
+    /// <param name="message">The message to send.</param>
+    /// <param name="user">The user the message should be encrypted for. If null Message is encrypted with group key.</param>
+    private async void SendMessage(string message, User user = null)
+    {
+        List<ExFile> files = default;
+
+        if (attachments.Count > 0)
+        {
+            files = await GetBytesFromFiles(attachments);
+        }
+
+        try
+        {
+            VmChatOverview.SendMessage(message, files, user);
+        }
+        catch (Exception e)
+        {
+            JSRuntime.InvokeVoidAsync("alert", e.Message);
+        }
+
+        messageToSend = string.Empty;
+        await fileEdit.Reset();
+
+        //reset (above) does not delete file names in the fileEdit, see: https://github.com/stsrki/Blazorise/issues/1597
+        await JSRuntime.InvokeVoidAsync("setFileInputLabel", fileEdit.ElementId, string.Empty);
+
+        StateHasChanged();
+    }
+
+    private void OnFilesChanged(FileChangedEventArgs e)
+    {
+        attachments = e.Files.ToList();
+    }
+
+    private async Task<List<ExFile>> GetBytesFromFiles(List<IFileEntry> files)
+    {
+        List<ExFile> fileByteArray = new List<ExFile>();
+
+        if (files == null) return fileByteArray;
+
+        foreach(var file in files)
+        {
+            MemoryStream stream = new MemoryStream();
+            await file.WriteToStreamAsync(stream);
+            fileByteArray.Add(new ExFile
+            {
+                Name = file.Name,
+                Content = stream.ToArray(),
+                Size = file.Size,
+                Type = file.Type,
+                LastModified = file.LastModified
+            });
+        }
+        return fileByteArray;
+    }
+
+    private void OnChangeToUserMessage(User user)
+    {
+        selectedUser = user;
+        headerText = $"Chat with {selectedUser.FirstName} {selectedUser.LastName}";
+        StateHasChanged();
+    }
+
+    private void OnChangeToGroupChat()
+    {
+        selectedUser = null;
+        headerText = "Group Chat";
+        StateHasChanged();
+    }
+}

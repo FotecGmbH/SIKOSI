@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<views:SikosiContentPage
+    x:Class="SIKOSI.Sample02.Views.ViewChatOverview"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:SIKOSI.Sample02.Views.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModel="clr-namespace:SIKOSI.Sample02.ViewModels"
+    xmlns:views="clr-namespace:SIKOSI.Sample02.Views"
+    d:DataContext="{d:DesignInstance {x:Type viewModel:ViewModelChatOverview}}"
+    x:TypeArguments="viewModel:ViewModelChatOverview"
+    mc:Ignorable="d">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackLayout Grid.Row="0" Orientation="Horizontal">
+            <Label Text="Local User: " />
+            <Label Text="{Binding CurrentLocalUser.Username}" />
+        </StackLayout>
+
+        <Picker
+            Title="Available Chats"
+            Grid.Row="1"
+            ItemDisplayBinding="{Binding}"
+            ItemsSource="{Binding PickerList, Mode=OneWay}"
+            SelectedIndex="{Binding SelectedPickerItemIndex, Mode=TwoWay}" />
+
+        <ListView
+            x:Name="ChatOverviewList"
+            Grid.Row="2"
+            HasUnevenRows="True"
+            ItemTemplate="{StaticResource MessageTemplateSelector}"
+            ItemsSource="{Binding ViewedMessages, Mode=TwoWay}"
+            SelectionMode="None"
+            SeparatorColor="Transparent"
+            VerticalOptions="FillAndExpand" />
+
+        <controls:ChatInput Grid.Row="3" />
+    </Grid>
+
+</views:SikosiContentPage>

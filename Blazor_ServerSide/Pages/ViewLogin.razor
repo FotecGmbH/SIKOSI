@@ -1,0 +1,72 @@
+﻿@page "/login"
+
+@using SIKOSI.Sample02.ViewModels
+
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+@inject ViewModelLogin VmLogin
+
+
+<div class="border-dark bg-light w-25 text-center justify-content-center" style="border-radius: 10%; margin-left: 33%; margin-top: 7%; position: absolute;">
+    <h1 class="m-1">Login</h1>
+    <hr />
+    <form>
+        <div class="form-group">
+            <label for="texbox_username">Benutzername</label>
+            <input type="text" class="form-control " id="texbox_username" aria-describedby="emailHelp" placeholder="Geben Sie ihren Benutzernamen ein! " @bind-value="@VmLogin.AuthModel.Username">
+        </div>
+        <div class="form-group">
+            <label for="textbox_password">Password</label>
+            <input type="password" class="form-control " id="textbox_password" placeholder="Passwort eingeben! " @bind-value="@VmLogin.AuthModel.Password">
+        </div>
+        <br />
+        <button type="button" class="btn btn-primary m-2" @onclick="@StartLoginProcess">Login</button>
+        <br />
+        <a href="register" class="btn btn-light btn-outline-dark m-2">Erstellen Sie einen Account!</a>
+        <br />
+    </form>
+</div>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        await VmLogin.OnInitialized();
+
+        VmLogin.LoginSuccessful -= VmLoginOnLoginSuccessful;
+        VmLogin.LoginNotSuccessful -= VmLoginOnLoginNotSuccessful;
+
+        VmLogin.LoginSuccessful += VmLoginOnLoginSuccessful;
+        VmLogin.LoginNotSuccessful += VmLoginOnLoginNotSuccessful;
+    }
+
+    private void VmLoginOnLoginNotSuccessful(object? sender, EventArgs e)
+    {
+        JSRuntime.InvokeVoidAsync("alert", "Login failed - Please try again.");
+    }
+
+    private void VmLoginOnLoginSuccessful(object? sender, EventArgs e)
+    {
+        JSRuntime.InvokeVoidAsync("alert", "Login successful!");
+
+        StateHasChanged();
+        NavigationManager.NavigateTo("chat");
+    }
+
+    /// <summary>
+    ///     Starts the login process using the provided data from the user.
+    /// </summary>
+    /// <returns></returns>
+    private async void StartLoginProcess()
+    {
+        try
+        {
+            VmLogin.LoginCommand.Execute(null);
+        }
+        catch
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Login failed - Please try again.");
+        }
+    }
+}

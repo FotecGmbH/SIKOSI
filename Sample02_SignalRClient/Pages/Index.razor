@@ -1,0 +1,104 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@using Sample02_SignalRClient.Model
+@inject NavigationManager NavigationManager
+@inject HttpClient http
+@implements IDisposable
+
+<div class="form-group">
+    <label>
+        User:
+        <input @bind="userInput" />
+    </label>
+</div>
+<div class="form-group">
+    <label>
+        Message:
+        <input @bind="messageInput" size="50" />
+    </label>
+</div>
+<button @onclick="Send" disabled="@(!IsConnected)">Send</button>
+<button @onclick="SendSecret" disabled="@(!IsConnected)">Authorisiert Senden</button>
+
+<hr>
+
+<ul id="messagesList">
+    @foreach (var message in messages)
+    {
+        <li>@message</li>
+    }
+</ul>
+
+@code {
+    private HubConnection hubConnection;
+    private List<string> messages = new List<string>();
+
+    private string userInput;
+    private string messageInput;
+
+    private string accessToken = "";
+    private string refreshToken;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+        .WithUrl("https://localhost:44376/chathub", options =>
+        {
+            options.AccessTokenProvider =
+                async () =>
+                {
+                    AuthenticateModel model = new AuthenticateModel();
+                    model.Username = "test";
+                    model.Password = "tset";
+
+                    var response = await http.PostAsJsonAsync("api/account/login", model);
+
+                    var user = await response.Content.ReadFromJsonAsync<AuthUserModel>();
+                    accessToken = user.Token;
+
+                    return accessToken;
+                };
+
+        })
+        .Build();
+
+        hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+        {
+            var encodedMsg = $"{user}: {message}";
+            messages.Add(encodedMsg);
+            StateHasChanged();
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    Task Send() =>
+        hubConnection.SendAsync("SendMessage", userInput, messageInput);
+
+    Task SendSecret() =>
+        hubConnection.SendAsync("SendSecretMessage", userInput, messageInput);
+
+    public bool IsConnected
+    {
+        get {
+
+
+            if (hubConnection == null || hubConnection.State != HubConnectionState.Connected)
+            {
+                return false;
+            }
+            else
+            {  
+                return true;
+            }
+        }
+    }
+
+
+
+    public void Dispose()
+    {
+        _ = hubConnection.DisposeAsync();
+    }
+}

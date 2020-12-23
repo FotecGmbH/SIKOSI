@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "Über das Demo";
+}
+<h1>@ViewData["Title"]</h1>
+
+<h2>Inhaltsverzeichnis</h2>
+<ol>
+    <li>XSRF-Attacke Demo</a></li>
+    <li>Zwei Faktor Authentifizierung.</li>
+    <li>Externe Loginanbieter</li>
+    <li>Admin Bereich</li>
+</ol>
+
+<h2 id="XSRF">XSRF-Attacke</h2>
+<p>
+    Das XSRF-Demo gliedert sich in zwei Abschnitte. Im ersten Abschnitt, auf dieser Seite wird eine simulierte Banküberweisung durchgeführt.
+    Anschließend wird der Benutzer auf eine andere Seite umgeleitet, welche eine bösartige Seite darstellen soll.
+</p>
+<p>
+    Dort ist dann auf ein PopUp zu klicken, welches im Hintergrund ein Request zurück an diese Seite schicken wird. Was dann passiert, kann jeder für sich selbst
+    herausfinden, durch klicken auf den Menüpunkt <a href="https://localhost:44387/Home/XSRF"XSRF-Demo>XSRF Demo</a>.
+</p>
+
+<h2 id="2FA">Zwei Faktor Authentifizierung</h2>
+<p>
+    Die Zwei Faktor Authentifizierung ist bereits weit verbreitet, und das aus gutem Grund. Die Zwei Faktor Authentifizierung
+    ist leicht in ein Web Projekt einzubinden. Microsoft bietet für das Thema um die Authentifizierung ein eigenes Framework, <a href="https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-3.1&tabs=visual-studio">Microsoft.AspNetCore.Identity.</a>
+</p>
+<p>
+    Nach Einloggen in die Applikation, kann durch klicken auf den eigenen Benutzernamen in der rechten oberen Ecke in einem Menü der Punkt
+    <b>Zwei Faktor Authentifizierung</b> ausgewählt werden.
+    Um diese einzurichten wird eine Authentifikations-App benötigt, zum Beispiel <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=de_AT">Google Authenticator</a>
+    oder <a href="https://play.google.com/store/apps/details?id=com.azure.authenticator&hl=de_AT">Microsoft Authenticator.</a>
+</p>
+<h2>Externe Login Anbieter</h2>
+<p>
+    Viele Web Applikationen bieten bereits die Möglichkeit, sich mit einem unabhängigen dritten Anbieter zu Authentifizieren. Für viele Benutzer hat dies
+    den Vorteil, dass ein bereits bestehender Account zum anmelden verwendet wird, wodurch es nicht notwendig ist, sich noch ein Passwort zu merken.
+    Im Fall von Apple besteht sogar die Möglichkeit, die eigene private Mailadresse bei der Anmeldung geheim zu halten. Diese Demo Applikation unterstützt
+    die externen Loginanbieter
+    <ul>
+        <li>Apple</li>
+        <li>Facebook</li>
+        <li>Google</li>
+        <li>Microsoft</li>
+    </ul>
+</p>
+<p>
+    Implementierungsdetails können in den <a href="https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/?view=aspnetcore-3.1&tabs=visual-studio">offiziellen Microsoft Docs</a>
+    eingesehen werden.
+    Für Details zur Implementierung des Apple Logins, sind folgende Ressourcen interessant:
+    <ul>
+        <li>
+            <a href="https://sarunw.com/posts/sign-in-with-apple-4/">Sign In with Apple</a>
+        </li>
+        <li>
+            <a href="https://sarunw.com/posts/sign-in-with-apple-3/#how-to-verify-the-token">Token verifizieren</a>
+        </li>
+        <li>
+            <a href="https://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_js/configuring_your_webpage_for_sign_in_with_apple">Offizielle Apple Dokumentation</a>
+        </li>
+    </ul>
+</p>
+
+<h2>Admin Bereich</h2>
+<p>
+    Der Admin Bereich ist eine Sektion, die von einem Benutzer nur aufgerufen werden kann, wenn ein Zwei Faktor Authentikator registriert ist.
+    Der Bereich selbst ist leer und dient nur zu Demonstrationszwecken.
+</p>

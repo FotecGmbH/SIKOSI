@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="appleid-signin-client-id" content="at.fotec.sikosi">
+    <meta name="appleid-signin-scope" content="name email">
+    <!--DIe redirect uri muss auf der Apple developer Homepage in den Service IDs angegeben werden. Localhosts sind nicht zulässig. 
+        Um am sinnvollsten zu testen, sollte die App auf einem Webserver gehosted werden, damit nicht immer per ngrok eine neue Url generiert werden muss.-->
+    <meta name="appleid-signin-redirect-uri" content="https://e92c9644b266.ngrok.io/authentication/applereturn">
+    <meta name="appleid-signin-state" content="Hier muss ein kryptografisch generierter String stehen, um app gegen XSRF zuschützen.">
+    <meta name="appleid-signin-nonce" content="Test">
+    <meta name="appleid-signin-use-popup" content="false">
+    <!-- or false defaults to false -->
+
+    <title>@ViewData["Title"]</title>
+
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+
+    <link rel="stylesheet" href="~/css/site.css" />
+
+
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/jquery-validate/jquery.validate.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <script type="text/javascript" src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
+
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-info border-bottom box-shadow mb-3">
+            <div class="container">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <partial name="_LoginPartial" />
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="About">Demo Informationen</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-controller="Home" asp-action="XSRF">XSRF Demo</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2020 - developed by <a href="https://www.fotec.at" target="_blank">Fotec GmbH</a>
+            - published under <a href="https://www.gnu.org/licenses/gpl-3.0.de.html" target="_blank">GPL V3 License</a>
+        </div>
+    </footer>
+
+
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

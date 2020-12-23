@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SIKOSI.Sample07_EncryptedChat</name>
+    </assembly>
+    <members>
+        <member name="M:SIKOSI.Sample07_EncryptedChat.Controllers.AccountController.GetBytesFromBody">
+            <summary>
+                Tries to retrieve a byte array out of the body.
+                Returns null if it fails to retrieve a byte array.
+            </summary>
+            <returns>The retrieved byte array sent in the body, null if no byte array can be retrieved.</returns>
+        </member>
+        <member name="T:SIKOSI.Sample07_EncryptedChat.Helper.AppSettings">
+            <summary>
+                <para>Application Settings</para>
+                Klasse AppSettings. (C) 2020 FOTEC Forschungs- und Technologietransfer GmbH
+            </summary>
+        </member>
+        <member name="P:SIKOSI.Sample07_EncryptedChat.Helper.AppSettings.Secret">
+            <summary>
+                Schlüssel
+            </summary>
+        </member>
+        <member name="P:SIKOSI.Sample07_EncryptedChat.Helper.AppSettings.TokenExpirationTimeout">
+            <summary>
+                Gültigkeit des Tokens in Minuten
+            </summary>
+        </member>
+        <member name="T:SIKOSI.Sample07_EncryptedChat.Helper.AutoMapperProfile">
+            <summary>
+            The AutoMapperProfile class.
+            </summary>
+        </member>
+        <member name="M:SIKOSI.Sample07_EncryptedChat.Helper.AutoMapperProfile.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:SIKOSI.Sample07_EncryptedChat.Helper.AutoMapperProfile"/> class.
+            </summary>
+        </member>
+    </members>
+</doc>

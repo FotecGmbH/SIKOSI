@@ -1,0 +1,17 @@
+﻿@page
+@model MFA_QR_CODE.Areas.Identity.Pages.Account.Manage.AdminViewModel
+@{
+    var isToFactorEnabled = this.User.Claims.FirstOrDefault(t => t.Type == "amr");
+
+    <h1>Admin Bereich</h1>
+
+    if (isToFactorEnabled != null && "mfa".Equals(isToFactorEnabled.Value))
+    {
+        <h2>Zwei Faktor Authentifizierung aktiviert, Sie haben Zugriff auf den Bereich.</h2>
+    }
+    else
+    {
+        <h2 style="color:red">Zwei Faktor Authentifizierung nicht aktiviert, Zugriff verweigert! Wenn die Zwei Faktor Authentifizierung gerade erst
+    aktiviert wurde, bitte ausloggen und danach mit dem gleichen Account wieder einloggen.</h2>
+    }
+}

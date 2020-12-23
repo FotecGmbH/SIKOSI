@@ -1,0 +1,91 @@
+﻿@page "/mydata"
+@inject AuthUserModel currentUser
+@inject ISecureEncryption secureEncryption
+@inject HttpClient http
+@inject IJSRuntime JSRuntime
+
+@using SIKOSI.SecureServices;
+@using SIKOSI.Crypto.Interfaces;
+@using System.Net.Http.Headers
+
+<style>
+    .logo {
+        width: 50px;
+    }
+</style>
+
+
+<h1>Meine Daten</h1>
+<hr />
+<h3>Daten ändern</h3>
+<!-- TODO MFA Attribut-->
+<div class="form-group">
+    <label for="textbox_username">Benutzername</label>
+    <input type="text" class="form-control" id="textbox_username" @bind="@changedUser.Username">
+</div>
+<div class="form-group">
+    <label for="textbox_firstname">Vorname</label>
+    <input type="text" class="form-control" id="textbox_firstname" @bind="@changedUser.FirstName">
+</div>
+<div class="form-group">
+    <label for="textbox_lastname">Nachname</label>
+    <input type="text" class="form-control" id="textbox_lastname" @bind="@changedUser.LastName">
+</div>
+<div class="form-group">
+    <label for="textbox_old_password">Bisheriges Password</label>
+    <input type="text" class="form-control" id="textbox_old_password" placeholder="Bisheriges Passwort eingeben! " @bind="@changedUser.OldPassword">
+</div>
+<div class="form-group">
+    <label for="textbox_password">Neues Passwort</label>
+    <input type="password" class="form-control" id="textbox_password" placeholder="Neues Passwort eingeben! " @bind-value="changedUser.Password">
+</div>
+<div class="form-group">
+    <label for="textbox_confirm_password">Neues Passwort</label>
+    <input type="password" class="form-control" id="textbox_confirm_password" placeholder="Neues Passwort bestätigen! " @bind-value="changedUser.ConfirmPassword">
+</div>
+<button class="btn btn-primary" @onclick="SaveChanges">Änderungen speichern</button>
+
+
+@code {
+    private bool mfaCheckbox;
+
+    private UserUpdateModel changedUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        mfaCheckbox = false;
+        changedUser = new UserUpdateModel
+        {
+            Id = currentUser.Id,
+            FirstName = currentUser.FirstName,
+            LastName = currentUser.LastName,
+            Username = currentUser.Username,
+            Password = string.Empty,
+            ConfirmPassword = string.Empty,
+            OldPassword = string.Empty
+        };
+    }
+
+    private async Task SaveChanges()
+    {
+        // get public key of server
+        var serverPublicKey = await http.GetByteArrayAsync("api/publickey");
+
+        // encrypt for server
+        var cs = new EncryptedCommunicationService { Encryption = secureEncryption, ReceiverPublicKey = serverPublicKey };
+
+        var postResult = await cs.TryEncryptedJsonPostWithoutResultModel<UserUpdateModel>(changedUser, http, $"api/account/update/{currentUser.Id}");
+
+        if (!postResult.IsServiceSuccessful)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Data could not be stored! Reason: {postResult.Exception.Message}");
+            return;
+        }
+
+        // if saving was successfull - update current user
+        currentUser.FirstName = changedUser.FirstName;
+        currentUser.LastName = changedUser.LastName;
+        currentUser.Username = changedUser.Username;
+    }
+
+}

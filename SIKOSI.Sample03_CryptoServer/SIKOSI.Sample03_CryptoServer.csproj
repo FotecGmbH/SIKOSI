@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>SIKOSI.Sample03_CryptoServer</AssemblyName>
+    <RootNamespace>SIKOSI.Sample03_CryptoServer</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SIKOSI.Crypto\SIKOSI.Crypto.csproj" />
+  </ItemGroup>
+
+
+</Project>

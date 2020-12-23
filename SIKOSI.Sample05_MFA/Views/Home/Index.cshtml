@@ -1,0 +1,73 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<Microsoft.AspNetCore.Identity.IdentityUser> SignInManager
+
+@{
+    <h1>
+        Demo XSRF und Two Factor Authentication
+    </h1>
+
+    <p>
+        Diese Demo Applikation beschäftigt sich mit den folgenden Themen.
+        <ul>
+            <li>XSRF (Cross Site Request Forgery)</li>
+            <li>Two Factor Authentication</li>
+            <li>Externe Loginanbieter</li>
+        </ul>
+
+        Um die Two Factor Authentication einzurichten, ist es notwendig sich in einen Benutzeraccount einzuloggen. Dies kann ein bereits bestehender Applikationsaccount,
+        oder ein Account eines externen Loginanbieters sein.
+        Die XSRF Demo kann über das Navigationsmenü erreicht werden.
+        Mehr Informationen zu diesem Demo findet sich unter dem Menüpunkt <a href="https://localhost:44387/Home/About">Demo Informationen</a>.
+    </p>
+}
+
+<script>
+
+</script>
+
+<style>
+    .tg {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+        .tg td {
+            border-color: black;
+            border-style: solid;
+            border-width: 2px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            overflow: hidden;
+            padding: 10px 5px;
+            word-break: normal;
+        }
+
+    .button {
+        background-color: cadetblue;
+        color: white;
+        height: 30px;
+        width: 150px;
+        font: bold;
+        text-align: center;
+    }
+
+    .tg th {
+        border-color: black;
+        border-style: solid;
+        border-width: 2px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        overflow: hidden;
+        padding: 10px 5px;
+        word-break: normal;
+    }
+
+    .tg .tg-0lax {
+        text-align: left;
+        vertical-align: top
+    }
+</style>

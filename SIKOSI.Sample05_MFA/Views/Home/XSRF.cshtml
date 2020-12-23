@@ -1,0 +1,51 @@
+﻿@model TransactionAmountModel
+
+<h1>XSRF-DEMO</h1>
+<p>
+    Dieser Teil der Webseite simuliert eine Banküberweisung, um die Gefahren einer <a href="https://owasp.org/www-community/attacks/csrf">XSRF-Attacke</a> zu veranschaulichen.
+    Hier kann der Benutzer eine legitime Banküberweisung auf ein Konto seiner Wahl tätigen. Um diese Funktionalität nutzen zu können, muss ein Benutzer eingeloggt sein.
+</p>
+<p>
+    Das nachfolgende Formular simuliert eine Banküberweisung, jedoch ist dieses Problem nicht nur ein mögliches Risiko für Bankgeschäfte.
+    Für die nachfolgende Demonstration ist anzunehmen, dass keine zusätzlichen Sicherheitsmaßnahmen im Spiel sind (TAC-SMS, MFA, und andere), 
+    was glücklicherweise bei seriösen Applikationen selten der Fall ist.
+    Für den ersten Schritt ist das Formular auszufüllen, und anschließend abzuschicken.
+</p>
+<form asp-controller="Home" asp-action="DoSomethingUnsafe" method="post">
+
+    <table class="tg">
+        <thead>
+            <tr>
+                <th class="tg-0lax">Betrag</th>
+                <th class="tg-0lax">Überweisungsaccount</th>
+                <th class="tg-0lax">Zielaccount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="tg-0lax">
+                    <input type="number" name="Model.Amount" value="@Model.Amount" />
+                </td>
+                <td class="tg-0lax">
+                    <input type="text" disabled name="SourceBankAccount" value="@Model.SourceBankAccount" />
+                </td>
+                <td class="tg-0lax">
+                    <input type="text" name="Model.DestinationBankAccount" value="@Model.DestinationBankAccount" />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <input type="text" hidden name="Model.RedirectionMessage" value="Um den nächsten Schritt der Demonstration einer XSRF-Attacke durchzuführen, gehen Sie bitte ohne sich auszuloggen auf die angegebene Seite: https://localhost:44376/" />
+    <input style="margin:10px" class="button" type="submit" value="Überweisen" />
+</form>
+<style>
+    .button {
+        background-color: cadetblue;
+        color: white;
+        height: 30px;
+        width: 150px;
+        font: bold;
+        text-align: center;
+    }
+</style>

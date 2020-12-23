@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>SIKOSI.Sample02_SRP</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>Common\SIKOSI.Sample02_SRP.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.6.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.6.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.6.3" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ExchangeSample0\SIKOSI.Exchange.csproj" />
+    <ProjectReference Include="..\Shared\SIKOSI.SRPShared.csproj" />
+    <ProjectReference Include="..\SIKOSI.Crypto\SIKOSI.Crypto.csproj" />
+    <ProjectReference Include="..\SIKOSI.SampleDatabase01\SIKOSI.SampleDatabase01.csproj" />
+    <ProjectReference Include="..\SIKOSI.SampleDatabase03\SIKOSI.SampleDatabase03.csproj" />
+    <ProjectReference Include="..\SIKOSI.Services.Auth\SIKOSI.Services.Auth.csproj" />
+    <ProjectReference Include="..\SIKOSI.SRP\SIKOSI.SRP.csproj" />
+  </ItemGroup>
+
+
+</Project>

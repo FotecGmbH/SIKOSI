@@ -1,0 +1,371 @@
+﻿@page "/files"
+
+@using System.IO;
+@using System.Net.Http.Headers
+@using System.Runtime.CompilerServices
+@using SIKOSI.Crypto.Interfaces;
+@using SIKOSI.Crypto;
+@using SIKOSI.SecureServices;
+@using SIKOSI.Exchange.Interfaces;
+
+@inject IJSRuntime JSRuntime
+@inject AuthUserModel currentUser
+@inject HttpClient http
+@inject NavigationManager NavigationManager
+@inject ISecureEncryption encryption
+@inject ISecureSymmetricEncryption symmetricEncryption
+
+<div style="height: 100vh">
+
+    <h3>ViewFileManagement</h3>
+
+    <FileEdit @ref="@fileEdit" AutoReset="false" Changed="@OnFileChanged" Multiple="true" />
+
+    <TextEdit @bind-Text="@password" Role="TextRole.Password" Placeholder="Enter password for file encryption">
+        <Button disabled="@string.IsNullOrWhiteSpace(password)" class="btn-primary" @onclick="@StartUpload">
+            Upload
+        </Button>
+    </TextEdit>
+
+    <br />
+    <hr />
+    
+    <Modal @ref="spinnerModalRef">
+        @*<ModalBackdrop />*@
+        <ModalContent IsCentered="true">
+            <ModalBody>
+                <div class="text-center">
+                    <div class="spinner-border text-secondary" role="status">
+                        <span class="sr-only">Loading files...</span>
+                    </div>
+                </div>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+
+    @if (!(savedFiles is null))
+    {
+        if (isLoading)
+        {
+            <div class="spinner-border text-secondary" role="status">
+                <span class="sr-only">Loading files...</span>
+            </div>
+        }
+        else
+        {
+            if (!savedFiles.Any())
+            {
+                <h4>No Files saved so far!</h4>
+            }
+            else
+            {
+                <h4>
+                    Available Files:
+                </h4>
+            }
+            <div class="container-fluid ">
+                @{
+                    var files = savedFiles.ToArray();
+
+                    for (int i = 0; i < files.Length; i++)
+                    {
+                        var file = files[i];
+
+                        // Todo: files schön anzeigen (evtl. mit hover!)
+
+                        var fileClass = "row text-center clickable";
+
+                        if (i % 2 == 0)
+                        {
+                            fileClass += " bg-light";
+                        }
+                        else
+                        {
+                            fileClass += " bg-secondary";
+                        }
+
+                        <div class="@fileClass" @onclick="@(() => DownloadEncryptedFile(file))">
+                            @file.Name
+                        </div>
+                    }
+                }
+            </div>
+        }
+    }
+
+    <!-- Modal für Passwort-Abfrage für File-Download - jedes File ist Passwort-verschlüsselt-->
+    <Modal @ref="modalRef">
+        @*<ModalBackdrop />*@
+        <ModalContent IsCentered="true">
+            <ModalHeader>
+                <ModalTitle>File Password</ModalTitle>
+                <CloseButton @onclick="@HideModal" />
+            </ModalHeader>
+            <ModalBody>
+                <Field>
+                    <FieldLabel>Password: </FieldLabel>
+                    <TextEdit @bind-Text="@selectedDownloadFilePassword" Role="TextRole.Password" Placeholder="Enter password for file decryption"/>
+                </Field>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary" @onclick="@HideModal">Abort</Button>
+                <Button Color="Color.Primary" disabled="@string.IsNullOrWhiteSpace(selectedDownloadFilePassword)" @onclick="@DecryptSelectedFile" >Start Decryption</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+
+</div>
+@code {
+
+    /// <summary>
+    /// The file input component.
+    /// </summary>
+    private FileEdit fileEdit;
+
+    /// <summary>
+    /// The selected files of the user.
+    /// </summary>
+    private IFileEntry[] selectedUploadFiles;
+
+    /// <summary>
+    /// The password for the file encryption.
+    /// </summary>
+    private string password;
+
+    /// <summary>
+    /// The list of files of the user that are save on the server.
+    /// </summary>
+    private IEnumerable<IFile> savedFiles = new List<ExFile>();
+
+    /// <summary>
+    /// The modal to be shown for entering a password for file-decryption.
+    /// </summary>
+    private Modal modalRef;
+
+    private Modal spinnerModalRef;
+
+    /// <summary>
+    /// The current selected file to download from the server.
+    /// </summary>
+    private IFile selectedDownloadFile;
+
+    /// <summary>
+    /// The password for file-decryption entered by the user.
+    /// </summary>
+    private string selectedDownloadFilePassword;
+
+    private bool isLoading;
+
+    /// <summary>
+    ///  Method invoked when the component is ready to start, having received its initial
+    ///  parameters from its parent in the render tree. Override this method if you will
+    ///  perform an asynchronous operation and want the component to refresh when that
+    ///  operation is completed.
+    /// </summary>
+    /// <returns></returns>
+    protected override async Task OnInitializedAsync()
+    {
+        //spinnerModalRef.Show();
+        isLoading = true;
+        await base.OnInitializedAsync();
+        savedFiles = await GetSavedFiles();
+        isLoading = false;
+        //spinnerModalRef.Hide();
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Gets called from the FileEdit. Saves the chosen files to an array.
+    /// </summary>
+    /// <param name="e"></param>
+    private async void OnFileChanged(FileChangedEventArgs e)
+    {
+        selectedUploadFiles = e.Files;
+    }
+
+    /// <summary>
+    /// Starts the process of uploading the files given in the FileEdit. The file gets password-encrypted beforehand.
+    /// </summary>
+    private async void StartUpload()
+    {
+        if (selectedUploadFiles == null || selectedUploadFiles.Length < 1)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "No Files selected!");
+
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            // no password given - maybe save unencrypted?
+            await JSRuntime.InvokeVoidAsync("alert", "Please enter a password!");
+
+            return;
+        }
+
+        isLoading = true;
+        spinnerModalRef.Show();
+
+        foreach (var file in selectedUploadFiles)
+        {
+            using var stream = new MemoryStream();
+
+            await file.WriteToStreamAsync(stream);
+
+            var content = stream.ToArray();
+
+            // encrypt file with password
+            var pwCryptoResult = symmetricEncryption.EncryptDataWithPassword(content, password);
+
+            if (pwCryptoResult.Success)
+            {
+                // create file data
+                var fileData = new ExFile
+                {
+                    Name = file.Name,
+                    Content = pwCryptoResult.ResultBytes,
+                    LastModified = file.LastModified,
+                    Size = file.Size,
+                    Type = file.Type
+                };
+
+                // get public key of server
+                var serverPublicKey = await http.GetByteArrayAsync("api/publickey");
+
+                // encrypt for server
+                // (after decryption, server can read all properties except of content because content is just decryptable with password)
+                var cs = new EncryptedCommunicationService { Encryption = encryption, ReceiverPublicKey = serverPublicKey };
+
+                var postResult = await cs.TryEncryptedJsonPostWithoutResultModel(fileData, http, $"api/postfile/{currentUser.Id}");
+
+                if (!postResult.IsServiceSuccessful)
+                {
+                    await JSRuntime.InvokeVoidAsync("alert", $"Encrypted upload of {file.Name} not successfull! Reason: {postResult.Exception.Message}");
+                }
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"Encryption of {file.Name} failed: Reason: {pwCryptoResult.CausingException.Message}");
+            }
+        }
+
+        savedFiles = await GetSavedFiles();
+        isLoading = false;
+        spinnerModalRef.Hide();
+        password = string.Empty;
+        await fileEdit.Reset();
+
+        //reset (above) does not delete file names in the fileEdit, see: https://github.com/stsrki/Blazorise/issues/1597
+        await JSRuntime.InvokeVoidAsync("setFileInputLabel", fileEdit.ElementId, string.Empty);
+
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Retrieves all saved files of this user from the server.
+    /// </summary>
+    /// <returns></returns>
+    private async Task<IEnumerable<IFile>> GetSavedFiles()
+    {
+        // get public key of server
+        var serverPublicKey = await http.GetByteArrayAsync("api/publickey");
+
+        //get saved files
+        var cs = new EncryptedCommunicationService { Encryption = encryption, ReceiverPublicKey = serverPublicKey };
+
+        var getResult = await cs.TryEncryptedJsonGet<List<ExFile>>(http, $"api/getfilesmetadata/{currentUser.Id}"); //ExFile[]?
+
+        if (!getResult.IsServiceSuccessful)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Error while retrieving files.");
+            return new List<IFile>();
+        }
+
+        return getResult.ResultModel;
+    }
+
+    /// <summary>
+    /// Downloads the encrypted file from the server.
+    /// </summary>
+    /// <param name="file">The specified file to download.</param>
+    /// <returns></returns>
+    private async Task DownloadEncryptedFile(IFile file)
+    {
+        if (file is null) return;
+
+        selectedDownloadFile = file;
+
+        isLoading = true;
+        spinnerModalRef.Show();
+
+        // get public key of server
+        var serverPublicKey = await http.GetByteArrayAsync("api/publickey");
+
+        var cs = new EncryptedCommunicationService { Encryption = encryption, ReceiverPublicKey = serverPublicKey };
+
+        var result = await cs.TryEncryptedJsonGet<byte[]>(http, $"api/getfilecontent/{currentUser.Id}/{file.Id}");
+
+        if (!result.IsServiceSuccessful)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Couldn't download the encrypted file {file.Name}");
+            return;
+        }
+
+        selectedDownloadFile.Content = result.ResultModel;
+
+        isLoading = false;
+        spinnerModalRef.Hide();
+
+        // content from server is encrypted with password used while uploading
+        ShowModal();
+    }
+
+    /// <summary>
+    /// Tries to decrypt the chosen file with the (in the modal) entered password and after that saved that file in download folder
+    /// via JavaScript function "SaveAs".
+    /// </summary>
+    /// <returns></returns>
+    private async Task DecryptSelectedFile()
+    {
+        if (selectedDownloadFile is null) return;
+
+        isLoading = true;
+        spinnerModalRef.Show();
+
+        var cryptoResult = symmetricEncryption.DecryptDataWithPassword(selectedDownloadFile.Content, selectedDownloadFilePassword);
+
+        if (!cryptoResult.Success)
+        {
+            isLoading = false;
+            spinnerModalRef.Hide();
+            await JSRuntime.InvokeVoidAsync("alert", $"Decryption failed: Reason: {cryptoResult.CausingException.Message}");
+
+            return;
+        }
+
+        isLoading = false;
+        spinnerModalRef.Hide();
+        HideModal();
+
+        await JSRuntime.InvokeVoidAsync("SaveAs", selectedDownloadFile.Name, System.Convert.ToBase64String(cryptoResult.ResultBytes));
+        selectedDownloadFile = null;
+    }
+
+    /// <summary>
+    /// Shows the modal to enter a password for the file encryption.
+    /// </summary>
+    private void ShowModal()
+    {
+        selectedDownloadFilePassword = string.Empty;
+        modalRef.Show();
+    }
+
+    /// <summary>
+    /// Hides the modal to enter a password for the file encryption.
+    /// </summary>
+    private void HideModal()
+    {
+        modalRef.Hide();
+        selectedDownloadFilePassword = string.Empty;
+    }
+}

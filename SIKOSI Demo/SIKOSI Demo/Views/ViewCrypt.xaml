@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<views:SikosiContentPage
+    x:Class="SIKOSI.Sample02.Views.ViewCrypt"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModel="clr-namespace:SIKOSI.Sample02.ViewModels"
+    xmlns:views="clr-namespace:SIKOSI.Sample02.Views"
+    d:DataContext="{d:DesignInstance {x:Type viewModel:ViewModelCrypt}}"
+    x:TypeArguments="viewModel:ViewModelCrypt"
+    mc:Ignorable="d">
+
+    <ScrollView>
+        <StackLayout>
+            <Label Text="Welcome to this encryption demo" />
+            <Label Text="This demo allows to encrypt a file and send it encrypted to a server." />
+
+            <Label Text="Please type in the password for file encryption." />
+            <Entry
+                IsPassword="True"
+                Text="{Binding Password, Mode=TwoWay}"
+                TextChanged="Entry_TextChanged" />
+            <Button
+                x:Name="FilePickerButton"
+                Command="{Binding CmdPickFile}"
+                IsEnabled="False"
+                Text="Chose file" />
+
+            <Label x:Name="LblSelectedFile" Text="Chosen file:" />
+            <Label x:Name="LblFileName" Text="{Binding FileName}" />
+
+            <Button
+                x:Name="BtnEncrypt"
+                Command="{Binding CmdEncryptFile}"
+                IsEnabled="False"
+                Text="Encrypt" />
+
+            <Button
+                x:Name="BtnSendEncryptedFileToServer"
+                Command="{Binding CmdSendEncryptedFile}"
+                IsEnabled="False"
+                Text="Send to server" />
+
+            <ListView
+                ItemsSource="{Binding SavedFiles}"
+                SelectionMode="None">
+                <ListView.Header>
+                    <StackLayout>
+                        <Label Text="Saved Files"/>
+                        <Button Text="Update Files" Command="{Binding CmdUpdateFiles}"/>
+                    </StackLayout>
+                </ListView.Header>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <ViewCell.View>
+                                <Label Text="{Binding Name}" />
+                            </ViewCell.View>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+        </StackLayout>
+    </ScrollView>
+
+</views:SikosiContentPage>

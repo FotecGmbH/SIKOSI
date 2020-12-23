@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<views:SikosiContentPage
+    x:Class="SIKOSI.Sample02.Views.ViewRegistration"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:SIKOSI.Sample02.Views.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModel="clr-namespace:SIKOSI.Sample02.ViewModels"
+    xmlns:views="clr-namespace:SIKOSI.Sample02.Views"
+    d:DataContext="{d:DesignInstance {x:Type viewModel:ViewModelRegistration}}"
+    x:TypeArguments="viewModel:ViewModelRegistration"
+    mc:Ignorable="d">
+    <ContentPage.Content>
+        <StackLayout Margin="20">
+            <Label
+                FontSize="Title"
+                HorizontalTextAlignment="Center"
+                Text="Registration"
+                TextColor="Black" />
+            <Entry
+                HorizontalTextAlignment="Center"
+                Placeholder="Username"
+                Text="{Binding RegistrationModel.Username}" />
+            <Entry
+                HorizontalTextAlignment="Center"
+                Placeholder="First name"
+                Text="{Binding RegistrationModel.FirstName}" />
+            <Entry
+                HorizontalTextAlignment="Center"
+                Placeholder="Last name"
+                Text="{Binding RegistrationModel.LastName}" />
+            <Entry
+                HorizontalTextAlignment="Center"
+                IsPassword="True"
+                Placeholder="Password"
+                Text="{Binding RegistrationModel.Password}" />
+            <Entry
+                HorizontalTextAlignment="Center"
+                IsPassword="True"
+                Placeholder="Confirm password"
+                Text="{Binding RegistrationModel.ConfirmPassword}" />
+            <Button
+                Command="{Binding RegistrationCommand}"
+                Text="Registration"
+                VerticalOptions="EndAndExpand" />
+            <Button
+                Clicked="SendToLogin"
+                Text="Go to Login"
+                VerticalOptions="End" />
+        </StackLayout>
+    </ContentPage.Content>
+</views:SikosiContentPage>
