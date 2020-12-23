@@ -23,7 +23,7 @@ The project contains the following components
 ![](_Documentation/ProjectStructure.png)
 
 ## Developer instructions
-Detailed developer informations can be found [here](/_Docu/Entwicklerdokumentation.pdf)
+Detailed developer informations can be found [here](/_Documentation/Entwicklerdokumentation.pdf)
 
 ## Supported by
 The project was supperted by [netidee](https://www.netidee.at).
